@@ -7,7 +7,7 @@ import Inputbox from "@/components/Inputbox";
 import Button from "@/components/Button";
 import toast from "react-hot-toast";
 
-const TwoStepauth = ({email}) => {
+const TwoStepauth = ({ email }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -63,11 +63,7 @@ const TwoStepauth = ({email}) => {
           />
 
           <div className="!mt-8">
-            <Button
-              onClick={handleVerify}
-              label="Verify"
-              loading={isLoading}
-            />
+            <Button onClick={handleVerify} label="Verify" loading={isLoading} />
           </div>
         </div>
       </div>
