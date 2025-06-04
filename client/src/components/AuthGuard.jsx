@@ -12,7 +12,9 @@ const AuthGuard = ({ children }) => {
   const { user, isLoading } = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(checkAuth());
+    if (!user && !isLoading) {
+      dispatch(checkAuth());
+    }
   }, [dispatch, pathname]);
 
   useEffect(() => {

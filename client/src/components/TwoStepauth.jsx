@@ -7,10 +7,9 @@ import Inputbox from "@/components/Inputbox";
 import Button from "@/components/Button";
 import toast from "react-hot-toast";
 
-const TwoStepauth = () => {
+const TwoStepauth = ({email}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email"); // Pass ?email=user@example.com in URL
 
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);

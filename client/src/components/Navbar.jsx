@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {  TbLogout } from "react-icons/tb";
+import { TbLogout } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/userSlice";
 
