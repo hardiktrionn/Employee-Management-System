@@ -41,6 +41,7 @@ const EditProfile = () => {
     { label: "Sales & Marketing", value: "Sales & Marketing" },
   ];
 
+  // User Data load
   useEffect(() => {
     if (user) {
       setEmail(user.email || "");
@@ -59,6 +60,8 @@ const EditProfile = () => {
     }
   }, [user]);
 
+
+  // User update theif personal details
   const handleUpdateProfile = async () => {
     const formData = new FormData();
     formData.append("name", name);

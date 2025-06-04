@@ -15,9 +15,10 @@ const ChangePassword = () => {
   const [error, setError] = useState({});
   const router = useRouter();
 
+  // Update User old password
   const handleChangePassword = async () => {
     try {
-      setError({})
+      setError({});
       setIsLoading(true);
       const res = await axiosInstance.post("/auth/change-password", {
         password,
@@ -35,8 +36,7 @@ const ChangePassword = () => {
       if (error.response?.data?.message?.server) {
         toast.error(error.response.data.message.server);
       } else {
-        const message =
-          error.response?.data?.message ||{}
+        const message = error.response?.data?.message || {};
         setError(message);
       }
     }

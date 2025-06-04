@@ -47,7 +47,7 @@ const userSlice = createSlice({
     builder.addCase(registerUser.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(registerUser.fulfilled, (state) => {
+    builder.addCase(registerUser.fulfilled, (state,action) => {
       state.isLoading = false;
       state.user=action.payload.user
     });
@@ -66,7 +66,7 @@ const userSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        console.log(action.payload.user)
+        
         state.user = action.payload.user;
         toast.success("Profile updated successfully");
       })

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkAuth, loginUser } from "@/redux/userSlice";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
 const Login = () => {
   const router = useRouter();
@@ -24,9 +25,13 @@ const Login = () => {
   };
 
   const facebookLogin = () => {
-    window.open(`${process.env.NEXT_PUBLIC_SERVER_HOST}/auth/facebook`, "_self");
+    window.open(
+      `${process.env.NEXT_PUBLIC_SERVER_HOST}/auth/facebook`,
+      "_self"
+    );
   };
 
+  // Login the User
   const handleLogin = async () => {
     const res = await dispatch(loginUser({ email, password }));
     if (res?.payload?.success) {
@@ -39,17 +44,23 @@ const Login = () => {
     }
   };
 
+  // Check user
   useEffect(() => {
     if (!user && !isLoading) {
       dispatch(checkAuth());
     }
   }, [dispatch]);
 
+  // Check user Already login or not
   useEffect(() => {
     if (user && !isLoading) {
       router.push("/dashboard");
     }
   }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center">

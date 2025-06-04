@@ -8,6 +8,7 @@ import Inputbox from "@/components/Inputbox";
 import Button from "@/components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth, registerUser } from "@/redux/userSlice";
+import Loader from "@/components/Loader";
 
 const Register = () => {
   const router = useRouter();
@@ -31,17 +32,24 @@ const Register = () => {
     dispatch(registerUser({ name, email, password, confirmPassword }));
   };
 
+  // Check user are valid or not
   useEffect(() => {
     if (!user && !isLoading) {
       dispatch(checkAuth());
     }
   }, [dispatch]);
 
+
+  // Check user Already login or not
   useEffect(() => {
     if (user && !isLoading) {
       router.push("/");
     }
   }, [user, isLoading, router]);
+
+  if(isLoading){
+    return <Loader/>
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">

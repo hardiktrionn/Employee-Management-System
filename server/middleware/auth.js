@@ -16,4 +16,12 @@ const isAuthenticated = (req, res, next) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
-module.exports = { isAuthenticated };
+
+const isAdmin = (req, res, next) => {
+  if (req.user.role != "admin") {
+    return res.status(400).json({ message: "Not Access" });
+  }
+  next();
+};
+
+module.exports = { isAuthenticated, isAdmin };

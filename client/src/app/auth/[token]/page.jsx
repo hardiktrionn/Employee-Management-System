@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const AuthHandler = ({ params }) => {
   const router = useRouter();
-  const { token } = params;
+
+  // ✅ Safely unwrap params.token using React.use()
+  const { token } = use(params);
 
   useEffect(() => {
     if (token) {

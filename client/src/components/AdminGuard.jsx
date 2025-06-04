@@ -26,8 +26,11 @@ const AuthGuard = ({ children }) => {
   }, [dispatch, user]);
 
   useEffect(() => {
-    if (checked && !user && pathname !== "/login") {
-      router.push("/login");
+    if (user && user?.role != "admin") {
+      router.push("/unauthorized");
+    }
+    if (checked && !user && pathname !== "/admin/login") {
+      router.push("/admin/login");
     }
   }, [checked, user, pathname, router]);
 

@@ -12,6 +12,7 @@ const VerifyLink = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Verify the email and give access for new pasword
     const verify = async () => {
       if (!email) {
         router.push("/login");

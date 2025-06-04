@@ -59,7 +59,7 @@ const employeeSchema = new mongoose.Schema(
     joiningDate: Date,
     profilePhoto: {
       type: String,
-      default: "https://example.com/default-avatar.png",
+      default: "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg",
     },
   },
   {

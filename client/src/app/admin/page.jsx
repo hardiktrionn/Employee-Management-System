@@ -11,10 +11,10 @@ export default function Home() {
   const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (user) {
-      router.push("/dashboard");
+    if (user && user?.role == "admin") {
+      router.push("/admin/dashboard");
     } else {
-      router.push("/login");
+      router.push("/admin/login");
     }
   }, [router]);
 

@@ -38,7 +38,7 @@ const registerEmployee = async (req, res) => {
     res.cookie("token", generateToken({ id: user._id, role: user.role }));
     return res.status(200).json({ success: true, user });
   } catch (error) {
-    console.log(error);
+    
     return res.status(500).json({
       success: false,
       message: { server: error.message || "Server Error" },
@@ -440,7 +440,7 @@ const newPassword = async (req, res) => {
       message: "Change the Password",
     });
   } catch (error) {
-    console.log(error);
+    
     return res.status(500).json({
       success: false,
       message: { server: error.message || "Server Error" },

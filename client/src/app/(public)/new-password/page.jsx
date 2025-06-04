@@ -17,6 +17,7 @@ const NewPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState({});
 
+  // User set new password
   const handleNewPassword = async () => {
     try {
       setIsLoading(true);
