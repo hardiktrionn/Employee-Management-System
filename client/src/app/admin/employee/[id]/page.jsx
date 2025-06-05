@@ -1,240 +1,264 @@
 "use client";
 
-import { FaCalendarDays } from "react-icons/fa6";
-import { FiEdit3, FiPlus } from "react-icons/fi";
+import { use, useEffect, useState } from "react";
+import axiosInstance from "@/utils/axios";
+import { useRouter } from "next/navigation";
+import Inputbox from "@/components/Inputbox";
+import Selectbox from "@/components/Selectbox";
+import Button from "@/components/Button";
+import toast from "react-hot-toast";
+import { AiOutlineHome } from "react-icons/ai";
+import Link from "next/link";
 
 const EmployeeDashboard = ({ params }) => {
-  const { id } = params();
-  const [activeTab, setActiveTab] = useState("Detail");
+  const { id } = use(params);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState({});
 
-  const tabs = [
-    "Employment",
-    "Detail",
-    "Document",
-    "Payroll",
-    "Timeoff",
-    "Reviews",
-    "Settings",
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [contact, setContact] = useState("");
+  const [department, setDepartment] = useState("");
+  const [emergencyContact, setEmergencyContact] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [joiningDate, setJoiningDate] = useState("");
+  const [dob, setDob] = useState("");
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [socialMedia, setSocialMedia] = useState({
+    linkedin: "",
+    github: "",
+    twitter: "",
+  });
+  const [newProfilePhoto, setNewProfilePhoto] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState("");
+
+  const allDepartment = [
+    { label: "Choose Department", value: "" },
+    { label: "Software Development", value: "Software Development" },
+    { label: "QA", value: "QA" },
+    { label: "DevOps", value: "DevOps" },
+    { label: "Design", value: "Design" },
+    { label: "Sales & Marketing", value: "Sales & Marketing" },
   ];
 
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const response = await axiosInstance.get(`/employee/${id}`);
+        setUser(response.data.data);
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchEmployee();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email || "");
+      setName(user.name || "");
+      setAddress(user.address || "");
+      setDesignation(user.designation || "");
+      setContact(user.contact || "");
+      setDepartment(user.department || "");
+      setEmergencyContact(user.emergencyContact || "");
+      setEmployeeId(user.employeeId || "");
+      setJoiningDate(user.joiningDate?.slice(0, 10) || "");
+      setDob(user.dob?.slice(0, 10) || "");
+      setProfilePhoto(user.profilePhoto || "");
+      setMfaEnabled(user.mfaEnabled || false);
+      setSocialMedia(
+        user.socialMedia || { linkedin: "", github: "", twitter: "" }
+      );
+    }
+  }, [user]);
+
+  // User update theif personal details
+  const handleUpdateProfile = async () => {
+    setError({});
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("address", address);
+    formData.append("designation", designation);
+    formData.append("contact", contact);
+    formData.append("emergencyContact", emergencyContact);
+    formData.append("employeeId", employeeId);
+    formData.append("department", department);
+    formData.append("joiningDate", joiningDate);
+    formData.append("dob", dob);
+    formData.append("mfaEnabled", mfaEnabled);
+    formData.append("socialMedia", JSON.stringify(socialMedia));
+    formData.append("profilePhoto", newProfilePhoto || profilePhoto);
+
+    try {
+      const response = await axiosInstance.put(`/employee/${id}`, formData);
+
+      setUser(response.data.user);
+      toast.success(response.data.message);
+      router.push("/admin/employee");
+    } catch (error) {
+      const message = error.response?.data?.message;
+      if (message?.general) {
+        toast.error(message?.general);
+      }
+      setError(message);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        {/* Main Content */}
-        <main className="flex-1 p-6">
-          {/* Tab Navigation */}
-          <div className="bg-white rounded-lg shadow-sm mb-6">
-            <div className="flex border-b">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab
-                      ? "border-yellow-500 text-yellow-600 bg-yellow-50"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
+    <div className="flex-1 py-10 px-4">
+      <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+        <div className="flex items-center text-sm text-gray-500">
+          <AiOutlineHome className="w-4 h-4 mr-1" />
+          <Link
+            href={"/admin/dashboard"}
+            className="cursor-pointer hover:underline"
+          >
+            Home
+          </Link>
+          <span className="mx-2">/</span>
+          <Link
+            href={"/admin/employee"}
+            className="cursor-pointer hover:underline"
+          >
+            Employee
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-purple-600 font-medium">{user?.name}</span>
+        </div>
+      </div>
+      <div className="w-full  border border-gray-200 p-6 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold mb-6">Update Profile</h2>
 
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Basic Information */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-6">
-                Basic Information
-              </h3>
+        <div className="flex justify-center mb-4">
+          <label htmlFor="profilePhoto" className="cursor-pointer">
+            <img
+              src={
+                newProfilePhoto
+                  ? URL.createObjectURL(newProfilePhoto)
+                  : profilePhoto ||
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
+              className="w-24 h-24 object-cover rounded-full"
+              alt="Profile"
+            />
+            <input
+              type="file"
+              id="profilePhoto"
+              accept="image/*"
+              onChange={(e) => setNewProfilePhoto(e.target.files[0])}
+              className="hidden"
+            />
+          </label>
+        </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Preferred Name :
-                  </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    Maria
-                  </span>
-                </div>
+        <div className="grid grid-cols-2 gap-5">
+          <Inputbox
+            label="Name"
+            value={name}
+            setValue={setName}
+            error={error?.name}
+          />
+          <Inputbox label="Email" value={email} readOnly />
+          <Inputbox
+            label="Date of Birth"
+            type="date"
+            value={dob}
+            setValue={setDob}
+            error={error?.dob}
+          />
+          <Inputbox
+            label="Contact"
+            value={contact}
+            setValue={setContact}
+            error={error?.contact}
+          />
+          <Inputbox
+            label="Emergency Contact"
+            value={emergencyContact}
+            setValue={setEmergencyContact}
+            error={error?.emergencyContact}
+          />
+          <Inputbox
+            label="Address"
+            value={address}
+            setValue={setAddress}
+            error={error?.address}
+          />
 
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">First Name :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    Maria
-                  </span>
-                </div>
+          <Inputbox label="Employee ID" value={employeeId} readOnly />
+          <Selectbox
+            label="Department"
+            options={allDepartment}
+            value={department}
+            setValue={setDepartment}
+            error={error?.department}
+          />
+          <Inputbox
+            label="Designation"
+            value={designation}
+            setValue={setDesignation}
+            error={error?.designation}
+          />
+          <Inputbox
+            label="Joining Date"
+            type="date"
+            value={joiningDate}
+            setValue={setJoiningDate}
+            error={error?.joiningDate}
+          />
+        </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Last Name :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    Cotton
-                  </span>
-                </div>
+        <h3 className="text-xl font-semibold mt-8 mb-4">Social Media</h3>
+        <div className="grid grid-cols-2 gap-5">
+          {["github", "linkedin", "twitter"].map((key) => (
+            <Inputbox
+              key={key}
+              label={key.charAt(0).toUpperCase() + key.slice(1)}
+              value={socialMedia[key]}
+              setValue={(val) => setSocialMedia({ ...socialMedia, [key]: val })}
+              placeholder={`${key} URL`}
+            />
+          ))}
+        </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Nationality :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    American
-                  </span>
-                </div>
+        <div className="mt-6 flex items-center space-x-4">
+          <span className="font-medium">Two-Step Auth:</span>
+          <button
+            onClick={() => setMfaEnabled(true)}
+            className={`px-3 py-1 rounded ${
+              mfaEnabled ? "bg-blue-600 text-white" : "bg-gray-300"
+            }`}
+          >
+            On
+          </button>
+          <button
+            onClick={() => setMfaEnabled(false)}
+            className={`px-3 py-1 rounded ${
+              !mfaEnabled ? "bg-blue-600 text-white" : "bg-gray-300"
+            }`}
+          >
+            Off
+          </button>
+        </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Date of Birth :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    05 May 1990
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Gender :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    Female
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Blood Group :</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-800">
-                      A+
-                    </span>
-                    <div className="flex gap-1">
-                      <button className="w-6 h-6 bg-purple-600 text-white rounded flex items-center justify-center text-xs">
-                        <FiPlus />
-                      </button>
-                      <button className="w-6 h-6 bg-purple-600 text-white rounded flex items-center justify-center text-xs">
-                        <FiEdit3 />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-6">
-                Contact
-              </h3>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Phone Number :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    987654321
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Personal Email :
-                  </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    mariacotton@example.com
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Secondary Number :
-                  </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    987654321
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Web Site :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    www.focustechnology.com
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Linkedin :</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-800">
-                      #mariacotton
-                    </span>
-                    <div className="flex gap-1">
-                      <button className="w-6 h-6 bg-purple-600 text-white rounded flex items-center justify-center text-xs">
-                        <FiPlus />
-                      </button>
-                      <button className="w-6 h-6 bg-purple-600 text-white rounded flex items-center justify-center text-xs">
-                        <FiEdit3 />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Dates */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-800">Dates</h3>
-                <button className="text-purple-600 text-sm font-medium hover:text-purple-700">
-                  New Type
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Start Date :</span>
-                  <span className="text-sm font-medium text-gray-800">
-                    06 Jun 2017
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Visa Expiry Date :
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-800">
-                      06 Jun 2020
-                    </span>
-                    <button className="w-6 h-6 bg-purple-600 text-white rounded flex items-center justify-center text-xs">
-                      <FiEdit3 />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <h4 className="text-lg font-semibold text-gray-800 mb-4">
-                  Dates
-                </h4>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <span className="text-sm text-gray-600">
-                      Add Start Date
-                    </span>
-                    <button className="w-8 h-8 bg-purple-600 text-white rounded flex items-center justify-center">
-                      <FaCalendarDays className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <span className="text-sm text-gray-600">
-                      Add Visa Expiry Date
-                    </span>
-                    <button className="w-8 h-8 bg-purple-600 text-white rounded flex items-center justify-center">
-                      <FaCalendarDays className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <button className="w-full mt-4 bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
-                  Add A Key Date
-                </button>
-              </div>
-            </div>
-          </div>
-        </main>
+        <div className="mt-10">
+          <Button
+            onClick={handleUpdateProfile}
+            label="Update Profile"
+            loading={loading}
+          />
+        </div>
       </div>
     </div>
   );

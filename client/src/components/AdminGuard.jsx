@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "@/redux/userSlice";
 import Loader from "./Loader";
+import { fetchAllEmplyoee } from "@/redux/adminSlice";
 
 const AuthGuard = ({ children }) => {
   const router = useRouter();
@@ -28,6 +29,8 @@ const AuthGuard = ({ children }) => {
   useEffect(() => {
     if (user && user?.role != "admin") {
       router.push("/unauthorized");
+    }else{
+      dispatch(fetchAllEmplyoee())
     }
     if (checked && !user && pathname !== "/admin/login") {
       router.push("/admin/login");

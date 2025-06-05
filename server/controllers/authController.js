@@ -7,6 +7,7 @@ const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
 const removeImage = require("../utils/removeImage");
 const generateSecureOTP = require("../utils/otpGenerate");
+const generateCustomId = require("../utils/generateCustomId");
 
 const registerEmployee = async (req, res) => {
   const error = validationResult(req);
@@ -27,18 +28,19 @@ const registerEmployee = async (req, res) => {
         message: { server: "Email is Already Exists" },
       });
 
+    let employeeId=await generateCustomId("Emp","employeeId")
+
     let hashPassword = await bcrypt.hash(password, 10);
     let user = await Employee.create({
       name,
       email,
       password: hashPassword,
-      employeeId: `Emp-${Date.now()}`,
+      employeeId: employeeId,
     });
     user.password = null;
     res.cookie("token", generateToken({ id: user._id, role: user.role }));
     return res.status(200).json({ success: true, user });
   } catch (error) {
-    
     return res.status(500).json({
       success: false,
       message: { server: error.message || "Server Error" },
@@ -121,7 +123,13 @@ const updateProfile = async (req, res) => {
   }
   try {
     let profileURL;
-    const userId = req.user.id;
+    let userId;
+    if (req.user.role == "admin") {
+      userId = req.params.id;
+    } else {
+      userId = req.user.id;
+    }
+    
     const {
       name,
       address,
@@ -440,7 +448,6 @@ const newPassword = async (req, res) => {
       message: "Change the Password",
     });
   } catch (error) {
-    
     return res.status(500).json({
       success: false,
       message: { server: error.message || "Server Error" },

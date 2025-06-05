@@ -29,7 +29,7 @@ const Login = () => {
       if (user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
-        router.push("/");
+        router.push("/login");
       }
     }
   }, [user, isLoading, router]);

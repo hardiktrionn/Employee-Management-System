@@ -55,6 +55,21 @@ router.put(
 router.get("/", isAuthenticated, getEmployee);
 router.post("/new-password", newPasswordValidator, newPassword);
 
+router.get("/logout", isAuthenticated, (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ success: true, message: "Logged out successfully" });
+});
+
+router.post(
+  "/mfaVerification",
+  body("otp")
+    .notEmpty()
+    .withMessage("Otp is Required")
+    .isNumeric()
+    .withMessage("Otp is Numeric"),
+  mfaVerification
+);
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -87,19 +102,6 @@ router.get(
   }
 );
 
-router.get("/logout", isAuthenticated, (req, res) => {
-  res.clearCookie("token");
-  res.status(200).json({ success: true, message: "Logged out successfully" });
-});
 
-router.post(
-  "/mfaVerification",
-  body("otp")
-    .notEmpty()
-    .withMessage("Otp is Required")
-    .isNumeric()
-    .withMessage("Otp is Numeric"),
-  mfaVerification
-);
 
 module.exports = router;

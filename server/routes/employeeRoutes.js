@@ -1,12 +1,18 @@
 const express = require("express");
 const {
-  fetchAllEmplyoee,
   deleteUser,
+  getAllEmplyoee,
+  getSingleEmployee,
 } = require("../controllers/employeeController");
+const { updateProfile } = require("../controllers/authController");
+const { updateProfileValidator } = require("../validator/authValidator");
+const uploadMiddleware = require("../middleware/multer");
 
 const router = express.Router();
 
-router.get("/", fetchAllEmplyoee);
+router.get("/", getAllEmplyoee);
 router.delete("/:id", deleteUser);
+router.get("/:id", getSingleEmployee);
+router.put("/:id", uploadMiddleware, updateProfileValidator, updateProfile);
 
 module.exports = router;

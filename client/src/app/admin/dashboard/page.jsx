@@ -1,12 +1,14 @@
 "use client";
 import Loader from "@/components/Loader";
+import { fetchAllEmplyoee } from "@/redux/adminSlice";
 import { useEffect, useState } from "react";
 import { FiUsers, FiTrendingUp, FiTrendingDown } from "react-icons/fi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("admin");
   const { isLoading } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const { isFetchingEmployee, employee } = useSelector((state) => state.admin);
   const [statsCards, setStatsCards] = useState([
     {
@@ -30,35 +32,15 @@ export default function AdminDashboard() {
     );
   }, [employee]);
 
+  useEffect(() => {
+    dispatch(fetchAllEmplyoee());
+  }, [dispatch]);
+
   if (isFetchingEmployee || isLoading) return <Loader />;
 
   return (
     <main className="flex-1 p-4 sm:p-6 lg:ml-0">
-      {/* Tabs */}
-      <div className="mb-6">
-        <div className="flex space-x-1 bg-gray-200 p-1 rounded-xl w-fit">
-          <button
-            onClick={() => setActiveTab("admin")}
-            className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
-              activeTab === "admin"
-                ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg transform scale-105"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            Admin Dashboard
-          </button>
-          <button
-            onClick={() => setActiveTab("employees")}
-            className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
-              activeTab === "employees"
-                ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg transform scale-105"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            Employees Dashboard
-          </button>
-        </div>
-      </div>
+      
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">

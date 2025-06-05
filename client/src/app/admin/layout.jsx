@@ -7,9 +7,10 @@ const layout = ({ children }) => {
     <>
       <AdminGuard>
         <AdminNavbar />
-        <div className="flex w-full">
+        <div className="flex w-full h-[90vh]">
           <Sidebar />
-          {children}
+
+          <div className="overflow-y-auto w-full">{children}</div>
         </div>
       </AdminGuard>
     </>

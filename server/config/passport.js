@@ -1,6 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const Employee = require("../schema/employeeSchema");
+const generateCustomId = require("../utils/generateCustomId");
 const FacebookStrategy = require("passport-facebook").Strategy;
 
 passport.use(
@@ -16,10 +17,14 @@ passport.use(
           $or: [{ googleId: profile.id }, { email: profile.emails[0].value }],
         });
         if (!emp) {
+          let employeeId = await generateCustomId("Emp", "employeeId");
+
           emp = await Employee.create({
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
+            profilePhoto: profile.photos[0].value,
+            employeeId,
           });
         }
         done(null, emp);
@@ -44,10 +49,14 @@ passport.use(
           $or: [{ facebookId: profile.id }, { email: profile.emails[0].value }],
         });
         if (!emp) {
+          let employeeId = await generateCustomId("Emp", "employeeId");
+          console.log(employeeId);
           emp = await Employee.create({
             facebookId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
+            employeeId,
+            profilePhoto: profile.photos?.[0]?.value,
           });
         }
         done(null, emp);
@@ -59,7 +68,7 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user.id); 
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {

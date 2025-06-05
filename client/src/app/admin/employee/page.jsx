@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,25 +14,34 @@ import Loader from "@/components/Loader";
 export default function EmployeeDashboard() {
   const { employee, isDeletingEmployee } = useSelector((state) => state.admin);
   const [isDeleteData, setIsDeleteData] = useState(false);
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState([]);
   const dispatch = useDispatch();
-  const getTeamBadgeColor = (team) => {
-    const colors = {
-      Design: "bg-blue-100 text-blue-800 border-blue-200",
-      iOS: "bg-green-100 text-green-800 border-green-200",
-      Android: "bg-orange-100 text-orange-800 border-orange-200",
-      Testing: "bg-blue-100 text-blue-800 border-blue-200",
-      PHP: "bg-red-100 text-red-800 border-red-200",
-      Business: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      "Operation Manager": "bg-indigo-100 text-indigo-800 border-indigo-200",
-    };
-    return colors[team] || "bg-gray-100 text-gray-800 border-gray-200";
-  };
 
-  const getManagerBadgeColor = (manager) => {
-    if (manager === "No") {
-      return "bg-red-100 text-red-800 border-red-200";
+  useEffect(() => {
+    setData(employee);
+  }, [employee]);
+
+  useEffect(() => {
+    const time = setTimeout(() => {
+      filterData();
+    }, 300);
+
+    return () => {
+      clearTimeout(time);
+    };
+  }, [search]);
+
+  const filterData = () => {
+    if (employee.length) {
+      let res = employee.filter(
+        (a) =>
+          a?.name?.toLowerCase().includes(search.toLocaleLowerCase()) ||
+          a?.email?.toLowerCase().includes(search.toLocaleLowerCase()) ||
+          a?.employeeId?.toLowerCase().includes(search.toLocaleLowerCase())
+      );
+      setData(res);
     }
-    return "bg-green-100 text-green-800 border-green-200";
   };
 
   if (isDeletingEmployee) return <Loader />;
@@ -50,14 +59,16 @@ export default function EmployeeDashboard() {
               <input
                 type="text"
                 placeholder="Search here"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className="bg-white/10 backdrop-blur-sm border-2 border-gray-300 text-black px-4 py-2 rounded-xl w-64 lg:w-80 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-300"
               />
               <AiOutlineSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-200" />
             </div>
-            <button className="bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
+            {/* <button className="bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
               <FiPlus className="w-4 h-4" />
               <span>Add Person</span>
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -90,60 +101,52 @@ export default function EmployeeDashboard() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {employee.map((employee) => (
-                <tr key={employee.id} className="hover:bg-gray-50">
+              {data.map((item) => (
+                <tr key={item._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={employee.profilePhoto || "/placeholder.svg"}
-                        alt={employee.name}
+                        src={item.profilePhoto || "/placeholder.svg"}
+                        alt={item.name}
                       />
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">
-                          {employee.name}
+                          {item.name}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-md border ${getManagerBadgeColor(
-                        employee.lineManager
-                      )}`}
-                    >
-                      {employee.email}
+                    <span item="inline-flex px-2 py-1 text-xs font-medium rounded-md border bg-green-100 text-green-800 border-green-200">
+                      {item.email}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-md border ${getTeamBadgeColor(
-                        employee.team
-                      )}`}
-                    >
-                      {employee.employeeId}
+                    <span className="inline-flex px-2 py-1 text-xs font-mediu border rounded-md bg-blue-100 text-blue-800 border-blue-200">
+                      {item.employeeId}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {employee.department}
+                    {item.department}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {employee.designation}
+                    {item.designation}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatISODate(employee.joiningDate)}
+                    {formatISODate(item.joiningDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center">
                       <Link
-                        href={`edit/${employee?.id}`}
+                        href={`/admin/employee/${item?._id}`}
                         className="mr-3 cursor-pointer"
                         title="Edit"
                       >
                         <FaRegEdit size={24} className="text-blue-500" />
                       </Link>
                       <button
-                        onClick={() => setIsDeleteData(employee?._id)}
+                        onClick={() => setIsDeleteData(item?._id)}
                         title="Delete"
                         className="cursor-pointer"
                       >
