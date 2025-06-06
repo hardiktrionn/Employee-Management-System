@@ -16,9 +16,8 @@ const uploadMiddleware = (req, res, next) => {
     if (err)
       return res.status(400).json({
         success: 0,
-        message: [{ path: "server", msg: "File upload failed" }],
+        message: { server: "File upload failed" },
       });
-
     req.body.profilePhoto = "";
     if (req.file) {
       req.body.profilePhoto = req.file.originalname;

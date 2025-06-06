@@ -28,7 +28,7 @@ const registerEmployee = async (req, res) => {
         message: { server: "Email is Already Exists" },
       });
 
-    let employeeId=await generateCustomId("Emp","employeeId")
+    let employeeId = await generateCustomId("Emp", "employeeId");
 
     let hashPassword = await bcrypt.hash(password, 10);
     let user = await Employee.create({
@@ -104,7 +104,9 @@ const loginEmployee = async (req, res) => {
     }
     user.password = null;
     res.cookie("token", generateToken({ id: user._id, role: user.role }));
-    return res.status(200).json({ success: true, user });
+    return res
+      .status(200)
+      .json({ success: true, user, message: "SuccessFully Login" });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -129,7 +131,7 @@ const updateProfile = async (req, res) => {
     } else {
       userId = req.user.id;
     }
-    
+
     const {
       name,
       address,
@@ -456,6 +458,12 @@ const newPassword = async (req, res) => {
 };
 
 const mfaVerification = async (req, res) => {
+  const error = validationResult(req);
+
+  if (!error.isEmpty()) {
+    let message = extractError(error.array());
+    return res.status(422).json({ success: false, message });
+  }
   const { otp, email } = req.body;
   const user = await Employee.findOne({ email }).select("-password");
 

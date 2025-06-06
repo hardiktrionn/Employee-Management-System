@@ -50,7 +50,7 @@ passport.use(
         });
         if (!emp) {
           let employeeId = await generateCustomId("Emp", "employeeId");
-          console.log(employeeId);
+        
           emp = await Employee.create({
             facebookId: profile.id,
             name: profile.displayName,

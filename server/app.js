@@ -9,12 +9,15 @@ const session = require("express-session");
 
 const authRoutes = require("./routes/authRoutes");
 const employeeRoute = require("./routes/employeeRoutes");
+const attendanceRoute = require("./routes/attendanceRoute");
+
 const { isAuthenticated, isAdmin } = require("./middleware/auth");
 connectDb();
 
 require("./config/passport");
 
 app.use(cookieParser());
+app.use(express.json());
 app.use(
   cors({
     origin: process.env.CLIENT_HOST,
@@ -30,11 +33,11 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.json());
 
 app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/employee", isAuthenticated, isAdmin, employeeRoute);
+app.use("/api/attendance", isAuthenticated, attendanceRoute);
 
 app.listen(3001, () => {
   console.log("Server run in port 3001");

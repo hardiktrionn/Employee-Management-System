@@ -68,7 +68,7 @@ const changePasswordValidator = [
       }
       return true;
     }),
-  body("confirmNewpassowrd").custom((value, { req }) => {
+  body("confirmNewpassword").custom((value, { req }) => {
     if (value !== req.body.newPassword) {
       throw new Error("Confirm Password are not Matched");
     }
