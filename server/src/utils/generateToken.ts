@@ -3,7 +3,6 @@ import jwt, { SignOptions } from "jsonwebtoken";
 interface JwtPayload {
   id?: string;
   email?: string;
-  role?: "admin" | "employee";
   otp?:string
 }
 const generateToken = (

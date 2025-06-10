@@ -32,8 +32,6 @@ interface MfaVerificationRequest extends Request {
 interface JwtPayload {
   otp?: string;
   id?: string;
-  role?: string;
-  // other fields
 }
 
 
@@ -67,7 +65,7 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
     });
     user.password = undefined;
 
-    res.cookie("token", generateToken({ id: (user._id as string), role: user.role }));
+    res.cookie("token", generateToken({ id: (user._id as string) }));
     res.status(200).json({ success: true, user });
   } catch (error: any) {
     res.status(500).json({
@@ -132,7 +130,7 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
     }
 
     user.password = undefined;
-    res.cookie("token", generateToken({ id: (user._id as string), role: user.role }));
+    res.cookie("token", generateToken({ id: (user._id as string) }));
     res.status(200).json({ success: true, user, message: "Successfully logged in" });
   } catch (error: any) {
     res.status(500).json({
@@ -248,7 +246,7 @@ export const forgetPassword = async (req: Request, res: Response): Promise<void>
       user.resetToken &&
         Date.now() < user.resetTokenExpiry?.getTime()!
         ? user.resetToken
-        : generateToken({ email, id: (user._id as string), role: user.role }, "5m");
+        : generateToken({ email, id: (user._id as string) }, "5m");
 
     const resetLink = `${process.env.CLIENT_HOST}/verify-link?email=${email}`;
 
@@ -414,7 +412,7 @@ export const mfaVerification = async (
       user.mfaVerifyToken = undefined;
       await user.save();
 
-      res.cookie("token", generateToken({ id: (user._id as string).toString(), role: user.role }));
+      res.cookie("token", generateToken({ id: (user._id as string).toString() }));
 
       res.status(200).json({
         success: true,

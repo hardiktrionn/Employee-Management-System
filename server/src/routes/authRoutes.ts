@@ -82,8 +82,8 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req: Request & { user?: any }, res: Response) => {
-    const { _id, role } = req.user;
-    const token = generateToken({ id: _id, role });
+    const { _id } = req.user;
+    const token = generateToken({ id: _id });
     res.cookie("token", token);
     res.redirect(`${process.env.CLIENT_HOST}/auth/${token}`);
   }
@@ -100,8 +100,8 @@ router.get(
     failureRedirect: `${process.env.CLIENT_HOST}/Login`,
   }),
   (req: Request & { user?: any }, res: Response) => {
-    const { _id, role } = req.user;
-    const token = generateToken({ id: _id, role });
+    const { _id } = req.user;
+    const token = generateToken({ id: _id });
     res.cookie("token", token);
     res.redirect(`${process.env.CLIENT_HOST}/auth/${token}`);
   }

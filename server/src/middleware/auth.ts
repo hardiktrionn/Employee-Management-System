@@ -1,16 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import Employee from "../schema/employeeSchema";
 
 interface CustomJwtPayload extends JwtPayload {
   id: string;
-  role: string;
 }
 
 interface AuthenticatedRequest extends Request {
   user?: CustomJwtPayload;
 }
 
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction): Response | void => {
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   const token = req.cookies?.token;
 
   if (!token) {
@@ -19,7 +19,11 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as CustomJwtPayload;
-    req.user = decoded;
+    let find = await Employee.findById(decoded.id).select("role email name")
+
+    if (!find) return res.status(404).json({ message: "User not found" });
+
+    req.user = { role: find.role, id: decoded.id, email: find.email, name: find.name }
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
