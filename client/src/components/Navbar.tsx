@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
 
       const data = await res.json();
       if (data.success) {
-        router.push("/");
+        router.push("/login");
         dispatch(setUser(null))
       } else {
         if (data.message) {
@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
   return (
     <header className="flex shadow-md py-4 px-4 sm:px-10 bg-white w-full tracking-wide sticky top-0 z-50">
       <div className="flex items-center w-full relative">
-        <Link href="/">
+        <Link href="/dashboard">
           <h1 className="font-bold text-3xl cursor-pointer">
             Employee Management System
           </h1>

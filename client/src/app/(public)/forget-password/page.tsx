@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../../utils/axios";
 import dynamic from "next/dynamic";
 import { AxiosError } from "axios";
+import Image from "next/image";
 
 const Inputbox = dynamic(() => import("../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../components/Button"));
@@ -51,8 +52,8 @@ const ForgetPassword = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="py-6 px-4">
-        <div className="grid md:grid-cols-2 items-center gap-6 max-w-6xl w-full">
-          <div className="border border-slate-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
+     
+          <div className="border border-slate-300 rounded-lg p-6 w-lg shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
             <div className="space-y-4">
               <div className="mb-12">
                 <h3 className="text-slate-900 text-3xl font-semibold">
@@ -79,14 +80,7 @@ const ForgetPassword = () => {
             </div>
           </div>
 
-          <div className="max-md:mt-8">
-            <img
-              src="https://readymadeui.com/login-image.webp"
-              className="w-full aspect-[71/50] max-md:w-4/5 mx-auto block object-cover"
-              alt="Forget password"
-            />
-          </div>
-        </div>
+      
       </div>
     </div>
   );

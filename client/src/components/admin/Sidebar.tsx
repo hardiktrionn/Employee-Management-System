@@ -2,7 +2,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaCalendarAlt } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdExitToApp } from "react-icons/md";
 import type { IconType } from "react-icons";
 
 interface SidebarItem {
@@ -15,6 +15,7 @@ const sidebarItems: SidebarItem[] = [
   { icon: MdDashboard, label: "Dashboard", path: "/admin/dashboard" },
   { icon: FiUsers, label: "Employees", path: "/admin/employee" },
   { icon: FaCalendarAlt, label: "Attendance", path: "/admin/attendance" },
+  { icon: MdExitToApp, label: "Leave", path: "/admin/leave" },
 ];
 
 const Sidebar: React.FC = () => {

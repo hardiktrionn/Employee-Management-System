@@ -1,4 +1,4 @@
-// pages/api/change-password.ts
+handler
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axiosInstance from '../../utils/axios';
 

@@ -8,6 +8,7 @@ import { RootState, AppDispatch } from "../../../lib/store";
 import toast from "react-hot-toast";
 import axiosInstance from "../../../utils/axios";
 import { setUser } from "../../../redux/userSlice";
+import Image from "next/image";
 
 const Inputbox = dynamic(() => import("../../../components/Inputbox"));
 const Selectbox = dynamic(() => import("../../../components/Selectbox"));
@@ -150,7 +151,7 @@ const EditProfile: React.FC = () => {
       if (response.data.success) {
         toast.success("Profile updated!");
         dispatch(setUser(response.data.user))
-        router.push("/dashboard");
+        router.push("/profile");
       }
     } catch (error: any) {
       const message = error?.response?.data.message || { server: "Server error" };
@@ -189,13 +190,15 @@ const EditProfile: React.FC = () => {
 
         <div className="flex justify-center mb-4">
           <label htmlFor="profilePhoto" className="cursor-pointer">
-            <img
+            <Image
               src={
                 newProfilePhoto
                   ? URL.createObjectURL(newProfilePhoto)
                   : profilePhoto ||
                   "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               }
+              height={100}
+              width={100}
               className="w-24 h-24 object-cover rounded-full"
               alt="Profile"
             />

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import Link from "next/link";
 import formatTime from "../../../../utils/formatTime";
@@ -35,40 +35,40 @@ interface AuthHandlerProps {
 export default function AttendanceSlug({ params }: AuthHandlerProps) {
   const { id } = use(params);
 
+  const startOfMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`;
   const [data, setData] = useState<AttendanceData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectionRange, setSelectionRange] = useState({
-    startDate: new Date().toISOString().split("T")[0],
+    startDate: startOfMonth,
     endDate: new Date().toISOString().split("T")[0],
   });
+
+  const fetchAttendanceData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`../../api/attendance/fetch/${id}?startDate=${selectionRange.startDate}&endDate=${selectionRange.endDate}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setData(data.data[0]);
+      } else {
+        if (data?.message?.server) toast.error(data?.message.server);
+      }
+    } catch (error: any) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, selectionRange.startDate, selectionRange.endDate]);
 
   useEffect(() => {
     if (id) {
       fetchAttendanceData();
     }
-  }, [id]);
-
-  const fetchAttendanceData = async () => {
-    try {
-      setIsLoading(true)
-      const res = await fetch(`../../api/attendance/fetch/${id}?startDate=${selectionRange.startDate}&endDate=${selectionRange.endDate}`, {
-        method: "GET",
-        credentials: "include"
-      });
-      const data = await res.json()
-
-      if (data.success) {
-        setData(data.data[0])
-      } else {
-        if (data?.message?.server) toast.error(data?.message.server);
-      }
-    } catch (error: any) {
-      toast.error("Something wrong")
-    } finally {
-      setIsLoading(false)
-    }
-  };
-
+  }, [id, fetchAttendanceData]);
 
   return (
     <div className="flex-1 py-10 px-4">

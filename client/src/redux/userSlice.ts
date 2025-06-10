@@ -71,10 +71,13 @@ const userSlice = createSlice({
     },
     setError: (state, action: PayloadAction<ErrorPayload | null>) => {
       state.error = action.payload
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload
     }
   },
 });
 
 // Export actions and reducer
-export const { setUser, clearError, setError } = userSlice.actions;
+export const { setUser, clearError, setError ,setLoading} = userSlice.actions;
 export default userSlice.reducer;

@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { AiOutlineHome } from "react-icons/ai";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Inputbox = dynamic(() => import("../../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../../components/Button"));
@@ -196,7 +197,9 @@ const EmployeeSlug = ({ params }: HandlerProps) => {
 
         <div className="flex justify-center mb-4">
           <label htmlFor="profilePhoto" className="cursor-pointer">
-            <img
+            <Image
+              height={80}
+              width={80}
               src={
                 newProfilePhoto
                   ? URL.createObjectURL(newProfilePhoto)

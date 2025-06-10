@@ -4,6 +4,8 @@ import { AiOutlineEye, AiOutlineSearch } from "react-icons/ai";
 import Link from "next/link";
 import { useEffect, useState, ChangeEvent, use } from "react";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import TableSkeleton from "@/components/skelton/TableSkeleton";
 
 interface EmployeeData {
   employeeId: string;
@@ -29,14 +31,14 @@ export default function Attendance() {
           credentials: "include"
         });
         const data = await res.json()
-        
+
         if (data.success) {
           setData(data.data)
         } else {
           if (data?.message?.server) toast.error(data?.message.server);
         }
       } catch (error: any) {
-        console.log(error)
+
         toast.error("Something wrong")
       } finally {
         setIsLoading(false)
@@ -47,11 +49,12 @@ export default function Attendance() {
   }, []);
 
 
-  
+
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
+  if (isLoading)return <TableSkeleton/>
   return (
     <div className="flex-1 w-full p-4 sm:p-6 lg:ml-0">
       {/* Content Area */}
@@ -100,14 +103,16 @@ export default function Attendance() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {data.map((item,i) => (
+              {data.map((item, i) => (
                 <tr key={i} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <img
+                      <Image
+                        height={80}
+                        width={80}
                         className="h-8 w-8 rounded-full"
                         src={item?.profile || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-                        alt={item?.name}
+                        alt={"img"}
                       />
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">{item?.name}</div>

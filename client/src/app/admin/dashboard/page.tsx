@@ -47,32 +47,35 @@ export default function AdminDashboard() {
     );
   }, [employee]);
 
-  useEffect(() => {
-    fetchAllEmplyoee()
-  }, [dispatch]);
 
-
-  const fetchAllEmplyoee = async (): Promise<void> => {
+useEffect(() => {
+  const fetchAllEmployee = async (): Promise<void> => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const res = await fetch(`../api/employee/fetch-all`, {
         method: "GET",
-        credentials: "include"
+        credentials: "include",
       });
-      const data = await res.json()
+      const data = await res.json();
 
       if (data.success) {
-        dispatch(setEmployee(data.data))
+        dispatch(setEmployee(data.data));
       } else {
         if (data?.message?.server) toast.error(data?.message.server);
       }
     } catch (error: any) {
-      console.log(error)
-      toast.error("Something wrong")
+      console.log(error);
+      toast.error("Something went wrong");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
+
+  fetchAllEmployee();
+}, [dispatch]); 
+
+
+
 
   return (
     <main className="flex-1 p-4 sm:p-6 lg:ml-0">

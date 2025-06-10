@@ -7,6 +7,9 @@ import type { AppDispatch } from "../../../lib/store";
 import dynamic from "next/dynamic";
 import toast from "react-hot-toast";
 import { setUser } from "../../../redux/userSlice";
+import Image from "next/image";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 
 const Inputbox = dynamic(() => import("../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../components/Button"));
@@ -49,8 +52,9 @@ const Register = () => {
             });
 
             const data = await res.json();
-            console.log(data)
+        
             if (data.success) {
+                toast.success("Successfully Register")
                 dispatch(setUser(data.user))
                 router.push("/dashboard");
             } else {
@@ -70,92 +74,81 @@ const Register = () => {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center">
             <div className="py-6 px-4">
-                <div className="grid md:grid-cols-2 items-center gap-6 max-w-6xl w-full">
-                    <div className="border border-slate-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
-                        <div className="space-y-6">
-                            <h3 className="text-slate-900 text-3xl font-semibold mb-12">Register</h3>
 
-                            <Inputbox
-                                label="Name"
-                                value={name}
-                                setValue={setName}
-                                placeholder="Your Name"
-                                error={error?.name}
+                <div className="border border-slate-300 rounded-lg p-6 w-lg shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
+                    <div className="space-y-6">
+                        <h3 className="text-slate-900 text-3xl font-semibold mb-12">Register</h3>
+
+                        <Inputbox
+                            label="Name"
+                            value={name}
+                            setValue={setName}
+                            placeholder="Your Name"
+                            error={error?.name}
+                        />
+                        <Inputbox
+                            label="Email"
+                            type="email"
+                            value={email}
+                            setValue={setEmail}
+                            placeholder="example@gmail.com"
+                            error={error?.email}
+                        />
+                        <Inputbox
+                            label="Password"
+                            type="password"
+                            value={password}
+                            setValue={setPassword}
+                            placeholder="*******"
+                            error={error?.password}
+                        />
+                        <Inputbox
+                            label="Confirm Password"
+                            type="password"
+                            value={confirmPassword}
+                            setValue={setConfirmPassword}
+                            placeholder="*******"
+                            error={error?.confirmPassword}
+                        />
+
+                        <div className="mt-2">
+                            <Button
+                                onClick={handleRegister}
+                                label="Register"
+                                loading={isLoading}
                             />
-                            <Inputbox
-                                label="Email"
-                                type="email"
-                                value={email}
-                                setValue={setEmail}
-                                placeholder="example@gmail.com"
-                                error={error?.email}
-                            />
-                            <Inputbox
-                                label="Password"
-                                type="password"
-                                value={password}
-                                setValue={setPassword}
-                                placeholder="*******"
-                                error={error?.password}
-                            />
-                            <Inputbox
-                                label="Confirm Password"
-                                type="password"
-                                value={confirmPassword}
-                                setValue={setConfirmPassword}
-                                placeholder="*******"
-                                error={error?.confirmPassword}
-                            />
 
-                            <div className="mt-2">
-                                <Button
-                                    onClick={handleRegister}
-                                    label="Register"
-                                    loading={isLoading}
-                                />
-
-                                <div className="my-4 flex items-center gap-4">
-                                    <hr className="w-full border-slate-300" />
-                                    <p className="text-sm text-slate-800 text-center">or</p>
-                                    <hr className="w-full border-slate-300" />
-                                </div>
-
-                                <div className="space-x-6 flex justify-center">
-                                    <Button
-                                        onClick={googleLogin}
-                                        color={false}
-                                        loading={isLoading}
-                                        label={"Google"}
-                                    />
-                                    <Button
-                                        onClick={facebookLogin}
-                                        color={false}
-                                        loading={isLoading}
-                                        label={"Facebook"}
-                                    />
-                                </div>
-
-                                <p className="text-sm mt-6 text-center text-slate-500">
-                                    Already have an account?
-                                    <span
-                                        onClick={() => router.push("/login")}
-                                        className="text-blue-600 font-medium hover:underline ml-1 cursor-pointer"
-                                    >
-                                        Login here
-                                    </span>
-                                </p>
+                            <div className="my-4 flex items-center gap-4">
+                                <hr className="w-full border-slate-300" />
+                                <p className="text-sm text-slate-800 text-center">or</p>
+                                <hr className="w-full border-slate-300" />
                             </div>
+
+                            <div className="space-x-6 flex justify-center">
+                                <button onClick={googleLogin}
+                                    className="border-0 outline-0 cursor-pointer  disabled:cursor-no-drop" disabled={isLoading}>
+                                    <FcGoogle size={30} />
+                                </button>
+                                <button onClick={facebookLogin}
+                                    className="border-0 outline-0 cursor-pointer disabled:cursor-no-drop" disabled={isLoading}>
+                                    <FaFacebook size={30} className="bg-white text-blue-600" />
+                                </button>
+                            </div>
+
+                            <p className="text-sm mt-6 text-center text-slate-500">
+                                Already have an account?
+                                <span
+                                    onClick={() => router.push("/login")}
+                                    className="text-blue-600 font-medium hover:underline ml-1 cursor-pointer"
+                                >
+                                    Login here
+                                </span>
+                            </p>
                         </div>
                     </div>
-
-                    <div className="max-md:mt-8">
-                        <img
-                            src="https://readymadeui.com/login-image.webp"
-                            className="w-full aspect-[71/50] max-md:w-4/5 mx-auto block object-cover"
-                            alt="register"
-                        />
-                    </div>
                 </div>
+
+
             </div>
         </div>
     );

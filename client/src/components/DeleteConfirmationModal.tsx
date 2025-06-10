@@ -6,12 +6,14 @@ interface DeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  isDeletingData: boolean
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  isDeletingData
 }) => {
   if (!isOpen) return null;
 
@@ -31,15 +33,16 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         <div className="mt-6 flex justify-center space-x-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 cursor-pointer"
           >
             Cancel
           </button>
           <button
+            disabled={isDeletingData}
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer disabled:bg-red-200 disabled:cursor-no-drop disabled:animate-pulse"
           >
-            Yes, Delete
+            {isDeletingData ? "Deleteing..." : "Yes, Delete"}
           </button>
         </div>
       </div>

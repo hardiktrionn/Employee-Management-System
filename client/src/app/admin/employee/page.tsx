@@ -8,9 +8,11 @@ import { FaRegEdit } from "react-icons/fa";
 import DeleteModal from "../../../components/DeleteConfirmationModal";
 import { BiTrash } from "react-icons/bi";
 import Link from "next/link";
-import type { RootState, AppDispatch } from "../../../lib/store";
+import type { AppDispatch, RootState } from "../../../lib/store";
 import toast from "react-hot-toast";
 import { setEmployee } from "../../../redux/adminSlice";
+import Image from "next/image";
+import TableSkeleton from "@/components/skelton/TableSkeleton";
 
 interface Employee {
   _id: string;
@@ -24,63 +26,86 @@ interface Employee {
 }
 
 export default function EmployeeDashboard() {
-  const { employee } = useSelector(
-    (state: RootState) => state.admin
-  );
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
+  const { employee } = useSelector((state: RootState) => state.admin);
   const [isDeleteData, setIsDeleteData] = useState<boolean | string>(false);
+  const [isDeletingData, setIsDeletingData] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [data, setData] = useState<Employee[]>([]);
+  const [allEmployee, setAllEmployee] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setData(employee);
-  }, [employee]);
-
-  useEffect(() => {
-    const time = setTimeout(() => {
-      filterData();
-    }, 300);
-
-    return () => clearTimeout(time);
-  }, [search]);
-
-  const filterData = () => {
-    if (employee.length) {
-      const res = employee.filter(
-        (a) =>
-          a?.name.toLowerCase().includes(search.toLowerCase()) ||
-          a?.email.toLowerCase().includes(search.toLowerCase()) ||
-          a?.employeeId.toLowerCase().includes(search.toLowerCase())
-      );
-      setData(res);
-    }
-  };
-
-  const deleteOneEmployee = async () => {
-    if (isDeleteData) {
+    const fetchAllEmplyoee = async (): Promise<void> => {
       try {
-        setIsDeleteData(true)
-        const res = await fetch(`api/employee/delete/${isDeleteData}`, {
-          method: "DELETE",
-          credentials: "include"
+        setIsLoading(true);
+        const res = await fetch(`../api/employee/fetch-all`, {
+          method: "GET",
+          credentials: "include",
         });
-        const data = await res.json()
+        const data = await res.json();
 
         if (data.success) {
-          let filter = employee.filter((item) => item._id != isDeleteData)
-          dispatch(setEmployee(filter))
+          setData(data.data);
+          dispatch(setEmployee(data.data));
         } else {
           if (data?.message?.server) toast.error(data?.message.server);
         }
       } catch (error: any) {
-        console.log(error)
-        toast.error("Something wrong")
+        toast.error("Something wrong");
       } finally {
-        setIsDeleteData(false)
+        setIsLoading(false);
+      }
+    };
+    fetchAllEmplyoee();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const time = setTimeout(() => {
+      if (allEmployee.length) {
+        const res = allEmployee.filter(
+          (a) =>
+            a?.name.toLowerCase().includes(search.toLowerCase()) ||
+            a?.email.toLowerCase().includes(search.toLowerCase()) ||
+            a?.employeeId.toLowerCase().includes(search.toLowerCase())
+        );
+        setData(res);
+      }
+    }, 300);
+
+    return () => clearTimeout(time);
+  }, [search, allEmployee]);
+
+  const deleteOneEmployee = async () => {
+    if (isDeleteData) {
+      try {
+        setIsDeletingData(true);
+        const res = await fetch(`../api/employee/delete/${isDeleteData}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          let filter = employee.filter((item) => item._id != data.id);
+          setAllEmployee(filter);
+          toast.success(data.message);
+          dispatch(setEmployee(filter));
+        } else {
+          if (data?.message?.server) toast.error(data?.message.server);
+        }
+      } catch (error: any) {
+        console.log(error);
+        toast.error("Something wrong");
+      } finally {
+        setIsDeletingData(false);
+        setIsDeleteData(false);
       }
     }
-  }
+  };
+
+  if (isLoading) return <TableSkeleton />;
 
   return (
     <div className="flex-1 w-full p-4 sm:p-6 lg:ml-0">
@@ -88,7 +113,7 @@ export default function EmployeeDashboard() {
       <div className="bg-white rounded-lg shadow-sm">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="text-lg font-medium text-gray-900">
-            {employee.length} People
+            {allEmployee.length} People
           </div>
 
           <div className="flex items-center space-x-4">
@@ -138,10 +163,12 @@ export default function EmployeeDashboard() {
                 <tr key={item._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <img
+                      <Image
+                        height={80}
+                        width={80}
                         className="h-8 w-8 rounded-full"
                         src={item.profilePhoto || "/placeholder.svg"}
-                        alt={item.name}
+                        alt={"img"}
                       />
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">
@@ -197,6 +224,7 @@ export default function EmployeeDashboard() {
       <DeleteModal
         isOpen={!!isDeleteData}
         onClose={() => setIsDeleteData(false)}
+        isDeletingData={isDeletingData}
         onConfirm={deleteOneEmployee}
       />
     </div>

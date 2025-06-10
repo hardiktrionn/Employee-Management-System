@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import formatISODate from "../../../utils/formatISODate";
 import formatTime from "../../../utils/formatTime";
 import toast from "react-hot-toast";
@@ -8,68 +8,84 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../lib/store";
+import Button from "../../../components/Button";
 
 // Define Attendance type
+interface AttendanceLog {
+  date: string;
+  workingHours: number;
+  checkInTime: string;
+  checkOutTime: string;
+  breakInTime: string;
+  breakOutTime: string;
+}
+
 interface Attendance {
   _id: string;
-  totalDays: number
-  totalHours: number
-  logs: [
-    { date: string, workingHours: number, checkIn: string, checkOut: string, breakIn: string, breakOut: string }
-  ]
+  totalDays: number;
+  totalHours: number;
+  logs: AttendanceLog[];
 }
 
 const AttendancePage = () => {
   const [data, setData] = useState<Attendance | undefined>();
   const [search, setSearch] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useSelector((state: RootState) => state.user)
+  const { user } = useSelector((state: RootState) => state.user);
 
-  useEffect(() => {
-    fetchAttendanceData();
-  }, []);
+  const startOfMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`;
+  const [selectionRange, setSelectionRange] = useState({
+    startDate: startOfMonth,
+    endDate: new Date().toISOString().split("T")[0],
+  });
 
-  const fetchAttendanceData = async (): Promise<void> => {
-    try {
-      setIsLoading(true)
-      const res = await fetch(`api/attendance/fetch/${user?.employeeId}`, {
-        method: "GET",
-        credentials: "include"
-      });
-      const data = await res.json()
+  const fetchAttendanceData = useCallback(async () => {
+    if (!user?.employeeId) return;
 
-      if (data.success) {
-        setData(data.attendance[0])
-      } else {
-        if (data?.message?.server) toast.error(data?.message.server);
-      }
-    } catch (error: any) {
-      toast.error("Something wrong")
-    } finally {
-      setIsLoading(false)
-    }
-  };
-
-  const handleAction = async (endpoint: string, successMessage: string): Promise<void> => {
     try {
       setIsLoading(true);
-      const res = await fetch(`api/attendance/action${endpoint}`, {
+      const res = await fetch(`/api/attendance/fetch/${user.employeeId}?startDate=${selectionRange.startDate}&endDate=${selectionRange.endDate}`, {
         method: "GET",
-        credentials: "include"
+        credentials: "include",
       });
 
-      const data = await res.json()
-      if (data?.success) {
+      const result = await res.json();
+      if (result.success) {
+        setData(result.data[0]);
+      } else {
+        if (result?.message?.server) toast.error(result?.message.server);
+      }
+    } catch (error: any) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.employeeId, selectionRange.startDate, selectionRange.endDate]);
+
+  useEffect(() => {
+    if (user) {
+      fetchAttendanceData();
+    }
+  }, [user, fetchAttendanceData]);
+
+  const handleAction = async (endpoint: string, successMessage: string) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`/api/attendance/action${endpoint}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const result = await res.json();
+      if (result.success) {
         toast.success(successMessage);
         await fetchAttendanceData();
       } else {
-        if (data.message?.server) {
-          toast.error(data.message.server)
-        }
+        if (result?.message?.server) toast.error(result?.message.server);
       }
     } catch (error: any) {
-      console.log(error)
-      toast.error("Something Wrong")
+      console.error(error);
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -111,9 +127,41 @@ const AttendancePage = () => {
               </button>
             ))}
           </div>
+
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center space-x-4">
+              <input
+                type="date"
+                onChange={(e) =>
+                  setSelectionRange((prev) => ({
+                    ...prev,
+                    startDate: e.target.value,
+                  }))
+                }
+                max={new Date().toISOString().split("T")[0]}
+                value={selectionRange.startDate}
+                className="border px-2 py-1 rounded"
+              />
+
+              <input
+                type="date"
+                onChange={(e) =>
+                  setSelectionRange((prev) => ({
+                    ...prev,
+                    endDate: e.target.value,
+                  }))
+                }
+                max={new Date().toISOString().split("T")[0]}
+                value={selectionRange.endDate}
+                className="border px-2 py-1 rounded"
+              />
+
+              <Button onClick={fetchAttendanceData} label={"Search"} loading={isLoading} />
+            </div>
+          </div>
         </div>
 
-        {/* Summary */}
+        {/* Summary Section */}
         <div className="grid grid-cols-3 gap-6 my-2 mx-10">
           <div className="flex flex-col items-center p-4 rounded-xl border border-gray-200 shadow-md">
             <h1 className="text-black font-bold">Name</h1>
@@ -128,23 +176,14 @@ const AttendancePage = () => {
             <span className="text-sm font-semibold">{data?.totalHours || 0}</span>
           </div>
         </div>
+
         {/* Attendance Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {[
-                  "Date",
-                  "Check In",
-                  "Break In",
-                  "Break Out",
-                  "Check Out",
-                  "Working Hours",
-                ].map((heading) => (
-                  <th
-                    key={heading}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
+                {["Date", "Check In", "Break In", "Break Out", "Check Out", "Working Hours"].map((heading) => (
+                  <th key={heading} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {heading}
                   </th>
                 ))}
@@ -153,24 +192,12 @@ const AttendancePage = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredData?.map((item) => (
                 <tr key={item.date} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatISODate(item.date)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatTime(item.checkIn)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatTime(item.breakIn)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatTime(item.breakOut)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatTime(item.checkOut)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {item.workingHours ? `${item.workingHours} hrs` : "-"}
-                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatISODate(item.date)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.checkInTime)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.breakInTime)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.breakOutTime)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.checkOutTime)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.workingHours ? `${item.workingHours} hrs` : "0 hrs"}</td>
                 </tr>
               ))}
               {filteredData?.length === 0 && (

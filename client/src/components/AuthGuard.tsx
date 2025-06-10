@@ -1,9 +1,9 @@
 
 import { useEffect, ReactNode, useState } from "react";
-import {  useRouter, } from "next/navigation";
+import { useRouter, } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../lib/store";
-import { setUser } from "../redux/userSlice";
+import { setLoading, setUser } from "../redux/userSlice";
 import Loader from "./Loader";
 
 interface AuthGuardProps {
@@ -12,7 +12,7 @@ interface AuthGuardProps {
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const router=useRouter()
+  const router = useRouter()
   const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [checked, setChecked] = useState<boolean>(false)
@@ -20,24 +20,28 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   useEffect(() => {
     if (!user && !checked) {
       setChecked(true)
+      const verifyAuth = async () => {
+        dispatch(setLoading(true))
+        setIsLoading(true)
+        const res = await fetch("/api/check-auth", {
+          method: "GET",
+        });
+
+        const data = await res.json();
+        setIsLoading(false)
+        dispatch(setLoading(false))
+
+        if (data.success) {
+          dispatch(setUser(data.user))
+        } else {
+          router.push("/login")
+        }
+      };
       verifyAuth();
     }
-  }, []);
+  }, [user, checked, dispatch, router]);
 
-  const verifyAuth = async () => {
-    setIsLoading(true)
-    const res = await fetch("/api/check-auth", {
-      method: "GET",
-    });
 
-    const data = await res.json();
-    setIsLoading(false)
-    if (data.success) {
-      dispatch(setUser(data.user))
-    } else {
-      router.push("/unathorized")
-    }
-  };
 
 
   return <>{

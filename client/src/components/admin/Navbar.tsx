@@ -8,11 +8,37 @@ import {
 } from "react-icons/ai";
 import { TbLogout2 } from "react-icons/tb";
 import type { AppDispatch } from "../../lib/store"; // Update path as needed
+import { setUser } from "../../redux/userSlice";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Navbar: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
+  const router=useRouter()
 
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("../../api/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setUser(null))
+        router.push("/admin/login");
+      } else {
+        if (data.message) {
+          toast.error(data.message)
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      toast.error("Something went wrong");
+    }
+
+  }
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-t from-blue-600 via-blue-700 to-blue-800 text-white shadow-2xl overflow-hidden rounded-b-[20px] py-2">
       <div className="absolute inset-0 bg-black/10"></div>
@@ -45,7 +71,7 @@ const Navbar: React.FC = () => {
             </div>
             <div className="relative hidden sm:block">
               <button
-                // onClick={() => dispatch(logoutUser())}
+                onClick={handleLogout}
                 className="group flex items-center justify-start w-8 h-8 bg-red-600 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1"
               >
                 <div className="w-full flex items-center justify-center transition-all duration-300 group-hover:justify-start group-hover:px-3">

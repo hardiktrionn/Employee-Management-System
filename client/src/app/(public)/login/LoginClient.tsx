@@ -3,10 +3,11 @@
 import { useState } from "react";
 import TwoStepauth from "../../../components/TwoStepauth";
 import Link from "next/link";
-
 import dynamic from "next/dynamic";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 
 const Inputbox = dynamic(() => import("../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../components/Button"));
@@ -44,8 +45,13 @@ const LoginClient = () => {
             const data = await res.json();
 
             if (data.success) {
-                toast.success("Login Succefully")
-                router.push("/dashboard");
+                if (data.mfaRequired) {
+                    setIsMfaAuth(true)
+
+                } else {
+                    toast.success("Login Succefully")
+                    router.push("/dashboard");
+                }
             } else {
                 setError(data.message);
                 if (data.message?.server) {
@@ -63,89 +69,80 @@ const LoginClient = () => {
         <div className="min-h-screen flex items-center justify-center">
             {!isMfaAuth ? (
                 <div className="py-6 px-4">
-                    <div className="grid md:grid-cols-2 items-center gap-6 max-w-6xl w-full">
-                        <div className="border border-slate-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
-                            <div className="space-y-4">
-                                <div className="mb-12">
-                                    <h3 className="text-slate-900 text-3xl font-semibold">Login</h3>
-                                </div>
 
-                                <Inputbox
-                                    label={"Email"}
-                                    type="email"
-                                    value={email}
-                                    setValue={setEmail}
-                                    placeholder="example@gmail.com"
-                                    error={error?.email}
-                                />
-                                <Inputbox
-                                    label={"Password"}
-                                    type="password"
-                                    value={password}
-                                    setValue={setPassword}
-                                    placeholder="*******"
-                                    error={error?.password}
-                                />
+                    <div className="border border-slate-300 rounded-lg p-6 w-lg shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
+                        <div className="space-y-4">
+                            <div className="mb-12">
+                                <h3 className="text-slate-900 text-3xl font-semibold">Login</h3>
+                            </div>
 
-                                <div className="flex flex-wrap items-center justify-end gap-4">
-                                    <div className="text-sm">
-                                        <Link
-                                            href="/forget-password"
-                                            className="text-blue-600 hover:underline font-medium"
-                                        >
-                                            Forgot your password?
-                                        </Link>
-                                    </div>
-                                </div>
+                            <Inputbox
+                                label={"Email"}
+                                type="email"
+                                value={email}
+                                setValue={setEmail}
+                                placeholder="example@gmail.com"
+                                error={error?.email}
+                            />
+                            <Inputbox
+                                label={"Password"}
+                                type="password"
+                                value={password}
+                                setValue={setPassword}
+                                placeholder="*******"
+                                error={error?.password}
+                            />
 
-                                <div className="!mt-12">
-                                    <Button
-                                        onClick={handleLogin}
-                                        label={"Login"}
-                                        loading={isLoading}
-                                    />
-                                    <div className="my-4 flex items-center gap-4">
-                                        <hr className="w-full border-slate-300" />
-                                        <p className="text-sm text-slate-800 text-center">or</p>
-                                        <hr className="w-full border-slate-300" />
-                                    </div>
-
-                                    <div className="space-x-6 flex justify-center">
-                                        <Button
-                                            onClick={googleLogin}
-                                            color={false}
-                                            loading={isLoading}
-                                            label={"Google"}
-                                        />
-                                        <Button
-                                            onClick={facebookLogin}
-                                            color={false}
-                                            loading={isLoading}
-                                            label={"Facebook"}
-
-                                        />
-                                    </div>
-                                    <p className="text-sm !mt-6 text-center text-slate-500">
-                                        Don't have an account{" "}
-                                        <Link
-                                            href="/register"
-                                            className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap"
-                                        >
-                                            Register here
-                                        </Link>
-                                    </p>
+                            <div className="flex flex-wrap items-center justify-end gap-4">
+                                <div className="text-sm">
+                                    <Link
+                                        href="/forget-password"
+                                        className="text-blue-600 hover:underline font-medium"
+                                    >
+                                        Forgot your password?
+                                    </Link>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="max-md:mt-8">
-                            <img
-                                src="https://readymadeui.com/login-image.webp"
-                                className="w-full aspect-[71/50] max-md:w-4/5 mx-auto block object-cover"
-                                alt="login img"
-                            />
+                            <div className="!mt-12">
+                                <Button
+                                    onClick={handleLogin}
+                                    label={"Login"}
+                                    loading={isLoading}
+                                />
+                                <div className="my-4 flex items-center gap-4">
+                                    <hr className="w-full border-slate-300" />
+                                    <p className="text-sm text-slate-800 text-center">or</p>
+                                    <hr className="w-full border-slate-300" />
+                                </div>
+
+                                <div className="space-x-6 flex justify-center">
+
+                                    <button onClick={googleLogin}
+                                        className="border-0 outline-0 cursor-pointer  disabled:cursor-no-drop" disabled={isLoading}>
+                                        <FcGoogle size={30} />
+                                    </button>
+                                    <button onClick={facebookLogin}
+                                        className="border-0 outline-0 cursor-pointer disabled:cursor-no-drop" disabled={isLoading}>
+                                        <FaFacebook size={30} className="bg-white text-blue-600" />
+                                    </button>
+                                </div>
+
+                                <p className="text-sm !mt-6 text-center text-slate-500">
+                                    Don&apos;t have an account
+                                    <Link
+                                        href="/register"
+                                        className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap"
+                                    >
+                                        Register here
+                                    </Link>
+                                </p>
+                            </div>
                         </div>
                     </div>
+
+
+
                 </div>
             ) : (
                 <TwoStepauth email={email} />

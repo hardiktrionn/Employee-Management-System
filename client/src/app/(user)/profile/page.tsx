@@ -9,7 +9,9 @@ import Button from "../../../components/Button";
 import { useSelector } from "react-redux";
 import formatISODate from "../../../utils/formatISODate";
 import { memo, ReactNode } from "react";
-import { RootState } from "../../../lib/store"; // adjust according to your redux store path
+import { RootState } from "../../../lib/store";
+import Image from "next/image";
+import Loader from "../../../components/Loader";
 
 interface SocialMediaLinks {
   github?: string;
@@ -18,7 +20,7 @@ interface SocialMediaLinks {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user ,isLoading} = useSelector((state: RootState) => state.user);
 
   const {
     name,
@@ -35,16 +37,21 @@ const ProfilePage: React.FC = () => {
     socialMedia = { linkedin: "", github: "", twitter: "" } as SocialMediaLinks,
   } = user || {};
 
+  if(isLoading){
+    return <Loader/>
+  }
   return (
     <div className="flex flex-col lg:flex-row space-y-10 lg:space-y-0 lg:space-x-20 mx-4 lg:mx-10 mt-10">
       <div className="lg:w-[30%] space-y-10">
         {/* Profile Box */}
         <div className="flex items-start px-8 py-5 space-x-5 border border-gray-200 shadow-sm rounded-2xl shadow-gray-500">
           {profilePhoto ? (
-            <img
+            <Image
+              height={80}
+              width={80}
               className="w-20 h-20 rounded-full object-cover"
               src={profilePhoto}
-              alt={name ? `${name}'s Profile` : "Profile Photo"}
+              alt={name ? `${name}'s Profile` : "Profile-Photo"}
             />
           ) : (
             <FaUserCircle className="w-20 h-20 text-gray-400" />
@@ -122,14 +129,16 @@ const ProfilePage: React.FC = () => {
   );
 };
 
+ProfilePage.displayName = "ProfilePage";
+
 interface InfoRowProps {
   icon?: ReactNode;
   label: string;
   value?: string | ReactNode;
-  isLink?: boolean; // whether value is a URL link or not
+  isLink?: boolean;
 }
 
-const InfoRow: React.FC<InfoRowProps> = memo(({ icon, label, value, isLink = false }) => {
+const InfoRowComponent: React.FC<InfoRowProps> = ({ icon, label, value, isLink = false }) => {
   if (!value) return null;
 
   const renderValue =
@@ -155,6 +164,10 @@ const InfoRow: React.FC<InfoRowProps> = memo(({ icon, label, value, isLink = fal
       <div className="text-gray-600 font-semibold text-xl text-right">{renderValue}</div>
     </div>
   );
-});
+};
+
+InfoRowComponent.displayName = "InfoRow";
+
+const InfoRow = memo(InfoRowComponent);
 
 export default ProfilePage;
