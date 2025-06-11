@@ -1,4 +1,7 @@
 
+/**
+ * total number of days between the startDate and endDate
+ */
 export const calculateDays = (startDate: Date, endDate: Date) => {
   if (startDate && endDate) {
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());

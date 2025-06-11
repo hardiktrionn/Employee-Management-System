@@ -22,6 +22,10 @@ export default function Attendance() {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
 
+  /**
+   * all user attendance fetch
+   * all user attendance are receive with total day and working hours
+   */
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
@@ -49,11 +53,7 @@ export default function Attendance() {
   }, []);
 
 
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
-
+  // if data are fetching stage to see Loader
   if (isLoading)return <TableSkeleton/>
   return (
     <div className="flex-1 w-full p-4 sm:p-6 lg:ml-0">
@@ -68,7 +68,7 @@ export default function Attendance() {
                 type="text"
                 placeholder="Search here"
                 value={search}
-                onChange={handleSearchChange}
+                onChange={(e)=>setSearch(e.target.value)}
                 className="bg-white/10 backdrop-blur-sm border-2 border-gray-300 text-black px-4 py-2 rounded-xl w-64 lg:w-80 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-300"
               />
               <AiOutlineSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-200" />

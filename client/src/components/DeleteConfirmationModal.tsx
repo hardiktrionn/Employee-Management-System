@@ -9,12 +9,12 @@ interface DeleteModalProps {
   isDeletingData: boolean
 }
 
-const DeleteModal: React.FC<DeleteModalProps> = ({
+const DeleteModal= ({
   isOpen,
   onClose,
   onConfirm,
   isDeletingData
-}) => {
+}:DeleteModalProps) => {
   if (!isOpen) return null;
 
   return (

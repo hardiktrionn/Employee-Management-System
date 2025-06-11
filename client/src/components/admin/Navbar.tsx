@@ -12,11 +12,12 @@ import { setUser } from "../../redux/userSlice";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const router=useRouter()
 
+  // Admin Logout
   const handleLogout = async () => {
     try {
       const res = await fetch("../../api/logout", {
@@ -33,7 +34,7 @@ const Navbar: React.FC = () => {
           toast.error(data.message)
         }
       }
-    } catch (err) {
+    } catch (err) { // Unexpected error handling
       console.log(err)
       toast.error("Something went wrong");
     }

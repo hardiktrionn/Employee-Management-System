@@ -9,7 +9,7 @@ interface AuthRequest extends Request {
     user?: { id: string; role: string, email: string, name: string };
 }
 
-
+// new Leave request register
 export const applyLeave = async (req: AuthRequest, res: Response): Promise<void> => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
@@ -74,6 +74,7 @@ export const applyLeave = async (req: AuthRequest, res: Response): Promise<void>
     }
 };
 
+// get all Request of all employee
 export const getAllLeaveRequests = async (req: Request, res: Response): Promise<void> => {
     try {
         const leaves = await LeaveRequest.find().populate('employee', 'name employeeId email profilePhoto');
@@ -83,6 +84,7 @@ export const getAllLeaveRequests = async (req: Request, res: Response): Promise<
     }
 };
 
+// get employee leave request
 export const getMyLeaves = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const leaves = await LeaveRequest.find({ employee: req.user?.id });
@@ -92,6 +94,7 @@ export const getMyLeaves = async (req: AuthRequest, res: Response): Promise<void
     }
 };
 
+// give approve the leave request
 export const approveLeave = async (req: Request, res: Response): Promise<void> => {
     try {
         const { requestsToUpdate } = req.body
@@ -107,6 +110,7 @@ export const approveLeave = async (req: Request, res: Response): Promise<void> =
     }
 };
 
+// give rejection the leave request
 export const rejectLeave = async (req: Request, res: Response): Promise<void> => {
     try {
         const { requestsToUpdate, reason } = req.body
@@ -125,6 +129,7 @@ export const rejectLeave = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
+// delete the leave request
 export const deleteSingleLeave = async (req: Request, res: Response): Promise<void> => {
     try {
         const leave = await LeaveRequest.findById(req.params.id).populate("email name");
@@ -144,6 +149,8 @@ export const deleteSingleLeave = async (req: Request, res: Response): Promise<vo
         res.status(500).json({ message: 'Error rejecting leave.', success: false });
     }
 }
+
+// edit the leave request
 export const editLeave = async (req: Request, res: Response): Promise<void> => {
     try {
 

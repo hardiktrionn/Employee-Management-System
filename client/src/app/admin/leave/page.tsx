@@ -44,13 +44,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MdAdminPanelSettings } from "react-icons/md";
@@ -96,6 +89,7 @@ export default function AdminLeavePage() {
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 10;
 
+  // fetch the all leave request
   const fetchLeaveData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -117,12 +111,14 @@ export default function AdminLeavePage() {
     }
   }, []);
 
+  // if user change then refetch the data
   useEffect(() => {
     if (user) {
       fetchLeaveData();
     }
   }, [fetchLeaveData, user]);
 
+  // Short the data according column
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -132,6 +128,7 @@ export default function AdminLeavePage() {
     }
   };
 
+  // Select Multiple leave request
   const handleSelectRequest = (requestId: string) => {
     setSelectedRequests((prev) =>
       prev.includes(requestId)
@@ -140,6 +137,7 @@ export default function AdminLeavePage() {
     );
   };
 
+  // Select the all leave request
   const handleSelectAll = () => {
     if (selectedRequests.length === filteredLeaveRequests.length) {
       setSelectedRequests([]);
@@ -148,6 +146,7 @@ export default function AdminLeavePage() {
     }
   };
 
+  // Manage the admin action for a leave requests
   const handleAction = async (
     action: "approve" | "reject",
     requestId?: string
@@ -207,6 +206,7 @@ export default function AdminLeavePage() {
     }
   };
 
+  // Manage the bult action means mutiple leave request give approve or reject
   const handleBulkAction = (action: "approve" | "reject") => {
     if (selectedRequests.length === 0) {
       toast.error("Please select at least one leave request.");
@@ -217,6 +217,7 @@ export default function AdminLeavePage() {
     setActionSheetOpen(true);
   };
 
+  // short the data according column wise
   const sortedLeaveRequests = [...leave].sort((a, b) => {
     if (!sortColumn) return 0;
 
@@ -250,6 +251,7 @@ export default function AdminLeavePage() {
     return sortDirection === "asc" ? comparison : -comparison;
   });
 
+  // Filter the leave request accroding they status
   const filteredLeaveRequests = sortedLeaveRequests.filter((leave) => {
     const matchesSearch =
       leave.employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -270,6 +272,7 @@ export default function AdminLeavePage() {
     currentPage * itemsPerPage
   );
 
+  // Give badge variant according they status
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case "Approved":
@@ -283,6 +286,7 @@ export default function AdminLeavePage() {
     }
   };
 
+  // seperate the leave request stata according they statsu
   const stats = {
     total: leave.length,
     pending: leave.filter((l) => l.status === "Pending").length,
@@ -290,6 +294,7 @@ export default function AdminLeavePage() {
     rejected: leave.filter((l) => l.status === "Rejected").length,
   };
 
+  // if leave request are loading stage to see loader
   if(isLoading)return <LeaveSkeleton/>
   return (
     <div className="p-8 bg-gradient-to-br from-background via-background to-muted/20 min-h-screen">
@@ -302,7 +307,7 @@ export default function AdminLeavePage() {
             Manage and approve leave requests across the organization.
           </p>
         </div>
-
+{/*All Tabs */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}

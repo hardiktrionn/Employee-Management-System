@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../lib/store";
 import Button from "../../../components/Button";
 
-// Define Attendance type
+// Define AttendanceLog
 interface AttendanceLog {
   date: string;
   workingHours: number;
@@ -20,6 +20,7 @@ interface AttendanceLog {
   breakOutTime: string;
 }
 
+// Define Attendance
 interface Attendance {
   _id: string;
   totalDays: number;
@@ -33,21 +34,30 @@ const AttendancePage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
 
-  const startOfMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`;
+  const startOfMonth = `${new Date().getFullYear()}-${String(
+    new Date().getMonth() + 1
+  ).padStart(2, "0")}-01`;
   const [selectionRange, setSelectionRange] = useState({
     startDate: startOfMonth,
     endDate: new Date().toISOString().split("T")[0],
   });
 
+  /**
+   * fetch the user attendance.
+   * the attendance are fetch the data between month first date to current date. 
+   */
   const fetchAttendanceData = useCallback(async () => {
     if (!user?.employeeId) return;
 
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/attendance/fetch/${user.employeeId}?startDate=${selectionRange.startDate}&endDate=${selectionRange.endDate}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/attendance/fetch/${user.employeeId}?startDate=${selectionRange.startDate}&endDate=${selectionRange.endDate}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const result = await res.json();
       if (result.success) {
@@ -62,12 +72,19 @@ const AttendancePage = () => {
     }
   }, [user?.employeeId, selectionRange.startDate, selectionRange.endDate]);
 
+  // user change to refetch data
   useEffect(() => {
     if (user) {
       fetchAttendanceData();
     }
   }, [user, fetchAttendanceData]);
 
+  /**
+   * the handle User action like(checkin,checkout,breakin,breakout)
+   * the this function take to argument.
+   * first the endpoin means what action to perform.
+   * and success message.
+   */
   const handleAction = async (endpoint: string, successMessage: string) => {
     try {
       setIsLoading(true);
@@ -91,6 +108,7 @@ const AttendancePage = () => {
     }
   };
 
+  // Filter the data according search
   const filteredData = data?.logs.filter((item) =>
     formatISODate(item.date).toLowerCase().includes(search.toLowerCase())
   );
@@ -118,7 +136,9 @@ const AttendancePage = () => {
             ].map((action) => (
               <button
                 key={action.label}
-                onClick={() => handleAction(action.endpoint, `${action.label} successfully`)}
+                onClick={() =>
+                  handleAction(action.endpoint, `${action.label} successfully`)
+                }
                 disabled={isLoading}
                 className="bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors disabled:opacity-50"
               >
@@ -156,7 +176,11 @@ const AttendancePage = () => {
                 className="border px-2 py-1 rounded"
               />
 
-              <Button onClick={fetchAttendanceData} label={"Search"} loading={isLoading} />
+              <Button
+                onClick={fetchAttendanceData}
+                label={"Search"}
+                loading={isLoading}
+              />
             </div>
           </div>
         </div>
@@ -169,11 +193,15 @@ const AttendancePage = () => {
           </div>
           <div className="flex flex-col items-center p-4 rounded-xl border border-gray-200 shadow-md">
             <h1 className="text-black font-bold">Total Working Days</h1>
-            <span className="text-sm font-semibold">{data?.totalDays || 0}</span>
+            <span className="text-sm font-semibold">
+              {data?.totalDays || 0}
+            </span>
           </div>
           <div className="flex flex-col items-center p-4 rounded-xl border border-gray-200 shadow-md">
             <h1 className="text-black font-bold">Total Working Hours</h1>
-            <span className="text-sm font-semibold">{data?.totalHours || 0}</span>
+            <span className="text-sm font-semibold">
+              {data?.totalHours || 0}
+            </span>
           </div>
         </div>
 
@@ -182,8 +210,18 @@ const AttendancePage = () => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {["Date", "Check In", "Break In", "Break Out", "Check Out", "Working Hours"].map((heading) => (
-                  <th key={heading} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {[
+                  "Date",
+                  "Check In",
+                  "Break In",
+                  "Break Out",
+                  "Check Out",
+                  "Working Hours",
+                ].map((heading) => (
+                  <th
+                    key={heading}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     {heading}
                   </th>
                 ))}
@@ -192,17 +230,32 @@ const AttendancePage = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredData?.map((item) => (
                 <tr key={item.date} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatISODate(item.date)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.checkInTime)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.breakInTime)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.breakOutTime)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTime(item.checkOutTime)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.workingHours ? `${item.workingHours} hrs` : "0 hrs"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {formatISODate(item.date)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {formatTime(item.checkInTime)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {formatTime(item.breakInTime)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {formatTime(item.breakOutTime)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {formatTime(item.checkOutTime)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {item.workingHours ? `${item.workingHours} hrs` : "0 hrs"}
+                  </td>
                 </tr>
               ))}
               {filteredData?.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center px-6 py-4 text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="text-center px-6 py-4 text-gray-500"
+                  >
                     No attendance records found.
                   </td>
                 </tr>

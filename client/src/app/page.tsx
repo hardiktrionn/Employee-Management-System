@@ -11,6 +11,7 @@ export default function Home() {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.user);
 
+  // check user are login or not if
   useEffect(() => {
     if (user) {
       router.push("/dashboard");

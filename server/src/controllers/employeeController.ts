@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Employee from "../schema/employeeSchema"; // Adjust path as necessary
 
+// get all employee data
 export const getAllEmployees = async (req: Request, res: Response): Promise<void> => {
   try {
     const employees = await Employee.find({ role: "employee" }).select("-password");
@@ -27,7 +28,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// GET a single employee by ID
+// GET a single employee data by ID
 export const getSingleEmployee = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;

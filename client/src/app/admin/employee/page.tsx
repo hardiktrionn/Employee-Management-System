@@ -14,6 +14,7 @@ import { setEmployee } from "../../../redux/adminSlice";
 import Image from "next/image";
 import TableSkeleton from "@/components/skelton/TableSkeleton";
 
+// interfaces
 interface Employee {
   _id: string;
   name: string;
@@ -36,6 +37,7 @@ export default function EmployeeDashboard() {
   const [allEmployee, setAllEmployee] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // fetch all employee
   useEffect(() => {
     const fetchAllEmplyoee = async (): Promise<void> => {
       try {
@@ -61,6 +63,7 @@ export default function EmployeeDashboard() {
     fetchAllEmplyoee();
   }, [dispatch]);
 
+  // filter the data according search with some delay
   useEffect(() => {
     const time = setTimeout(() => {
       if (allEmployee.length) {
@@ -77,6 +80,7 @@ export default function EmployeeDashboard() {
     return () => clearTimeout(time);
   }, [search, allEmployee]);
 
+  // Delete the employee
   const deleteOneEmployee = async () => {
     if (isDeleteData) {
       try {
@@ -105,6 +109,7 @@ export default function EmployeeDashboard() {
     }
   };
 
+  // data are loading stage to see the loader
   if (isLoading) return <TableSkeleton />;
 
   return (

@@ -40,7 +40,7 @@ passport.use(
         }
 
         done(null, emp);
-      } catch (err) {
+      } catch (err) { // Unexpected error handling
         done(err, null);
       }
     }
@@ -79,7 +79,7 @@ passport.use(
         }
 
         done(null, emp);
-      } catch (err) {
+      } catch (err) { // Unexpected error handling
         done(err, null);
       }
     }
@@ -94,7 +94,7 @@ passport.deserializeUser(async (id: string, done) => {
   try {
     const user = await Employee.findById(id);
     done(null, user);
-  } catch (err) {
+  } catch (err) { // Unexpected error handling
     done(err, null);
   }
 });

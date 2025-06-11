@@ -10,6 +10,7 @@ interface AuthenticatedRequest extends Request {
   user?: CustomJwtPayload;
 }
 
+// middleware to validate user are valid or not
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   const token = req.cookies?.token;
 
@@ -30,6 +31,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
   }
 };
 
+// middleware to validate admin are valid or not
 export const isAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction): Response | void => {
   if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({ message: "Access denied. Admins only." });

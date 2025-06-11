@@ -9,6 +9,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
+// Dynamic components
 const Inputbox = dynamic(() => import("../../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../../components/Button"));
 const Selectbox = dynamic(() => import("../../../../components/Selectbox"));
@@ -19,25 +20,8 @@ interface SocialMedia {
   twitter: string;
 }
 
-interface Employee {
-  _id: string;
-  name: string;
-  email: string;
-  address?: string;
-  designation?: string;
-  contact?: string;
-  department?: string;
-  emergencyContact?: string;
-  employeeId?: string;
-  joiningDate?: string; // ISO string
-  dob?: string; // ISO string
-  mfaEnabled?: boolean;
-  socialMedia?: SocialMedia;
-  profilePhoto?: string;
-}
-
-
-const allDepartment = [
+// Static department
+const departments = [
   { label: "Choose Department", value: "" },
   { label: "Software Development", value: "Software Development" },
   { label: "QA", value: "QA" },
@@ -46,153 +30,141 @@ const allDepartment = [
   { label: "Sales & Marketing", value: "Sales & Marketing" },
 ];
 
-interface Params {
-  id?: string
-}
-
-interface HandlerProps {
-  params: Promise<Params>
-}
-
-const EmployeeSlug = ({ params }: HandlerProps) => {
+const EmployeeSlug = ({ params }: { params: Promise<{ id?: string }> }) => {
   const { id } = use(params);
-  const [user, setUser] = useState<Employee | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [updating, setUpdating] = useState<boolean>(false);
-  const [error, setError] = useState<Record<string, string>>({});
-
   const router = useRouter();
 
-  const [email, setEmail] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
-  const [designation, setDesignation] = useState<string>("");
-  const [contact, setContact] = useState<string>("");
-  const [department, setDepartment] = useState<string>("");
-  const [emergencyContact, setEmergencyContact] = useState<string>("");
-  const [employeeId, setEmployeeId] = useState<string>("");
-  const [joiningDate, setJoiningDate] = useState<string>("");
-  const [dob, setDob] = useState<string>("");
-  const [mfaEnabled, setMfaEnabled] = useState<boolean>(false);
-  const [socialMedia, setSocialMedia] = useState<SocialMedia>({
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState<any>({});
+  const [formState, setFormState] = useState({
+    email: "",
+    name: "",
+    address: "",
+    designation: "",
+    contact: "",
+    department: "",
+    emergencyContact: "",
+    employeeId: "",
+    joiningDate: "",
+    dob: "",
+    mfaEnabled: false,
+    profilePhoto: "",
+    socialMedia: { linkedin: "", github: "", twitter: "" } as SocialMedia,
+  });
+  const [social, setSocial] = useState({
     linkedin: "",
     github: "",
     twitter: "",
   });
-  const [newProfilePhoto, setNewProfilePhoto] = useState<File | null>(null);
-  const [profilePhoto, setProfilePhoto] = useState<string>("");
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState("");
+  const [newPhoto, setNewPhoto] = useState<File | null>(null);
 
+  // fetch the employee throw theif id
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        setIsLoading(true)
-        const res = await fetch(`../../api/employee/${id}`, {
+        const res = await fetch(`../../api/employee/user/${id}`, {
           method: "GET",
-          credentials: "include"
+          credentials: "include",
         });
-        const data = await res.json()
-
-        if (data.success) {
-          setUser(data.data)
-        } else {
-          if (data?.message?.server) toast.error(data?.message.server);
-        }
-      } catch (error: any) {
-        console.log(error)
-        toast.error("Something wrong")
+        const data = await res.json();
+        if (data.success) setUser(data.data);
+        else toast.error(data?.message?.server);
+      } catch {
+        toast.error("Something went wrong");
       } finally {
-        setIsLoading(false)
+        setLoading(false);
       }
     };
-
-    if (id) {
-      fetchEmployee();
-    }
+    if (id) fetchEmployee();
   }, [id]);
 
+  // update the form State if employee change
   useEffect(() => {
     if (user) {
-      setEmail(user.email || "");
-      setName(user.name || "");
-      setAddress(user.address || "");
-      setDesignation(user.designation || "");
-      setContact(user.contact || "");
-      setDepartment(user.department || "");
-      setEmergencyContact(user.emergencyContact || "");
-      setEmployeeId(user.employeeId || "");
-      setJoiningDate(user.joiningDate?.slice(0, 10) || "");
-      setDob(user.dob?.slice(0, 10) || "");
-      setProfilePhoto(user.profilePhoto || "");
-      setMfaEnabled(user.mfaEnabled || false);
-      setSocialMedia(user.socialMedia || { linkedin: "", github: "", twitter: "" });
+      setFormState({
+        email: user.email || "",
+        name: user.name || "",
+        address: user.address || "",
+        designation: user.designation || "",
+        contact: user.contact || "",
+        department: user.department || "",
+        emergencyContact: user.emergencyContact || "",
+        employeeId: user.employeeId || "",
+        joiningDate: user.joiningDate?.slice(0, 10) || "",
+        dob: user.dob?.slice(0, 10) || "",
+        profilePhoto: user.profilePhoto || "",
+        mfaEnabled: user.mfaEnabled || false,
+        socialMedia: user.socialMedia || {
+          linkedin: "",
+          github: "",
+          twitter: "",
+        },
+      });
     }
   }, [user]);
 
-  const handleUpdateProfile = async () => {
-    setError({});
+  // update employee profile
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setUpdating(true);
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("address", address);
-    formData.append("designation", designation);
-    formData.append("contact", contact);
-    formData.append("emergencyContact", emergencyContact);
-    formData.append("employeeId", employeeId);
-    formData.append("department", department);
-    formData.append("joiningDate", joiningDate);
-    formData.append("dob", dob);
-    formData.append("mfaEnabled", mfaEnabled ? "true" : "false");
-    formData.append("socialMedia", JSON.stringify(socialMedia));
+    setError({});
 
-    if (newProfilePhoto) {
-      formData.append("profilePhoto", newProfilePhoto);
-    }
+    const { profilePhoto, ...rest } = formState;
+    const formData = new FormData();
+
+    Object.entries({
+      ...rest,
+      mfaEnabled: formState.mfaEnabled.toString(),
+      socialMedia: JSON.stringify(formState.socialMedia),
+    }).forEach(([key, value]) => formData.append(key, value));
+
+    if (newPhoto) formData.append("profilePhoto", newPhoto);
 
     try {
-      const response = await axiosInstance.put<{ user: Employee; message: string }>(
-        `/employee/${id}`,
-        formData
-      );
-      setUser(response.data.user);
-      toast.success(response.data.message);
+      const res = await axiosInstance.put(`/employee/${id}`, formData);
+      toast.success(res.data.message);
       router.push("/admin/employee");
     } catch (err: any) {
-      const message = err.response?.data?.message;
-      if (message?.server) {
-        toast.error(message.server);
-      }
-      setError(message || {});
+      const msg = err.response?.data?.message;
+      if (msg?.server) toast.error(msg.server);
+      setError(msg || {});
     } finally {
       setUpdating(false);
     }
   };
 
-  if (isLoading) {
+  if (loading)
     return (
       <div className="flex justify-center items-center h-full p-10 text-gray-500">
         Loading employee data...
       </div>
     );
-  }
 
   return (
     <div className="flex-1 py-10 px-4">
       <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center text-sm text-gray-500">
           <AiOutlineHome className="w-4 h-4 mr-1" />
-          <Link href={"/admin/dashboard"} className="cursor-pointer hover:underline">
+          <Link href="/admin/dashboard" className="hover:underline">
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link href={"/admin/employee"} className="cursor-pointer hover:underline">
+          <Link href="/admin/employee" className="hover:underline">
             Employee
           </Link>
           <span className="mx-2">/</span>
           <span className="text-purple-600 font-medium">{user?.name}</span>
         </div>
       </div>
-      <div className="w-full border border-gray-200 p-6 rounded-lg shadow-lg">
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-full border p-6 rounded-lg shadow-lg"
+      >
         <h2 className="text-3xl font-bold mb-6">Update Profile</h2>
 
         <div className="flex justify-center mb-4">
@@ -200,13 +172,13 @@ const EmployeeSlug = ({ params }: HandlerProps) => {
             <Image
               height={80}
               width={80}
-              src={
-                newProfilePhoto
-                  ? URL.createObjectURL(newProfilePhoto)
-                  : profilePhoto ||
-                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              }
               className="w-24 h-24 object-cover rounded-full"
+              src={
+                newPhoto
+                  ? URL.createObjectURL(newPhoto)
+                  : profilePhoto ||
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
               alt="Profile"
             />
             <input
@@ -214,60 +186,80 @@ const EmployeeSlug = ({ params }: HandlerProps) => {
               id="profilePhoto"
               accept="image/*"
               onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setNewProfilePhoto(e.target.files[0]);
-                }
+                if (e.target.files && e.target.files[0])
+                  setNewPhoto(e.target.files[0]);
               }}
               className="hidden"
-
             />
           </label>
         </div>
 
         <div className="grid grid-cols-2 gap-5">
-          <Inputbox label="Name" value={name} setValue={setName} error={error?.name} />
-          <Inputbox label="Email" value={email} readOnly={true} error={error?.email} setValue={setEmail} />
+          <Inputbox
+            label="Name"
+            value={formState.name || ""}
+            setValue={(val) => setFormState({ ...formState, name: val })}
+            error={error?.name}
+          />
+          <Inputbox
+            label="Email"
+            value={formState.email || ""}
+            readOnly={true}
+            setValue={() => {}}
+            error={error?.email}
+          />
           <Inputbox
             label="Date of Birth"
             type="date"
-            value={dob}
-            setValue={setDob}
+            value={formState.dob?.slice(0, 10) || ""}
+            setValue={(val) => setFormState({ ...formState, dob: val })}
             error={error?.dob}
-
           />
-          <Inputbox label="Contact" value={contact} setValue={setContact} error={error?.contact} />
+          <Inputbox
+            label="Contact"
+            value={formState.contact || ""}
+            setValue={(val) => setFormState({ ...formState, contact: val })}
+            error={error?.contact}
+          />
           <Inputbox
             label="Emergency Contact"
-            value={emergencyContact}
-            setValue={setEmergencyContact}
+            value={formState.emergencyContact || ""}
+            setValue={(val) =>
+              setFormState({ ...formState, emergencyContact: val })
+            }
             error={error?.emergencyContact}
-
           />
-          <Inputbox label="Address" value={address} setValue={setAddress} error={error?.address} />
-
-          <Inputbox label="Employee ID" value={employeeId} readOnly={true} setValue={setEmployeeId} />
+          <Inputbox
+            label="Address"
+            value={formState.address || ""}
+            setValue={(val) => setFormState({ ...formState, address: val })}
+            error={error?.address}
+          />
+          <Inputbox
+            label="Employee ID"
+            value={formState.employeeId || ""}
+            readOnly={true}
+            setValue={() => {}}
+          />
           <Selectbox
             label="Department"
-            options={allDepartment}
-            value={department}
-            setValue={setDepartment}
+            options={departments}
+            value={formState.department || ""}
+            setValue={(val) => setFormState({ ...formState, department: val })}
             error={error?.department}
-
           />
           <Inputbox
             label="Designation"
-            value={designation}
-            setValue={setDesignation}
+            value={formState.designation || ""}
+            setValue={(val) => setFormState({ ...formState, designation: val })}
             error={error?.designation}
-
           />
           <Inputbox
             label="Joining Date"
             type="date"
-            value={joiningDate}
-            setValue={setJoiningDate}
+            value={formState.joiningDate?.slice(0, 10) || ""}
+            setValue={(val) => setFormState({ ...formState, joiningDate: val })}
             error={error?.joiningDate}
-
           />
         </div>
 
@@ -277,12 +269,9 @@ const EmployeeSlug = ({ params }: HandlerProps) => {
             <Inputbox
               key={key}
               label={key.charAt(0).toUpperCase() + key.slice(1)}
-              value={socialMedia[key as keyof SocialMedia]}
-              setValue={(val) =>
-                setSocialMedia({ ...socialMedia, [key]: val })
-              }
+              value={social[key as keyof typeof social] || ""}
+              setValue={(val) => setSocial({ ...social, [key]: val })}
               placeholder={`${key} URL`}
-
             />
           ))}
         </div>
@@ -291,17 +280,19 @@ const EmployeeSlug = ({ params }: HandlerProps) => {
           <span className="font-medium">Two-Step Auth:</span>
           <button
             onClick={() => setMfaEnabled(true)}
-            className={`px-3 py-1 rounded ${mfaEnabled ? "bg-blue-600 text-white" : "bg-gray-300"
-              }`}
-
+            type="button"
+            className={`px-3 py-1 rounded ${
+              mfaEnabled ? "bg-blue-600 text-white" : "bg-gray-300"
+            }`}
           >
             On
           </button>
           <button
             onClick={() => setMfaEnabled(false)}
-            className={`px-3 py-1 rounded ${!mfaEnabled ? "bg-blue-600 text-white" : "bg-gray-300"
-              }`}
-
+            type="button"
+            className={`px-3 py-1 rounded ${
+              !mfaEnabled ? "bg-blue-600 text-white" : "bg-gray-300"
+            }`}
           >
             Off
           </button>
@@ -309,13 +300,13 @@ const EmployeeSlug = ({ params }: HandlerProps) => {
 
         <div className="mt-10">
           <Button
-            onClick={handleUpdateProfile}
+            type="submit"
             label="Update Profile"
             loading={updating}
             loadLabel="Updating.."
           />
         </div>
-      </div>
+      </form>
     </div>
   );
 };

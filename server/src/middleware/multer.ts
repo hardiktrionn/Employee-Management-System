@@ -2,6 +2,8 @@ import multer from "multer";
 import path from "path";
 import { Request, Response, NextFunction } from "express";
 
+// multer setup
+// upload a profilePhoto
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");

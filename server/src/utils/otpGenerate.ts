@@ -1,5 +1,6 @@
 import crypto from "crypto";
 
+// generate the 6 digit otp for validation
 function generateSecureOTP(length: number = 6): string {
   const digits = "0123456789";
   let otp = "";

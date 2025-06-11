@@ -5,6 +5,8 @@ interface JwtPayload {
   email?: string;
   otp?:string
 }
+
+// generate the twt token
 const generateToken = (
   data: JwtPayload,
   expiresIn: SignOptions['expiresIn'] = "1d"

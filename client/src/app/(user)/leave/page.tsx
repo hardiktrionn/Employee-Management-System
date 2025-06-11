@@ -14,6 +14,7 @@ export default function LeavePage() {
   return (
     <div className="p-8 bg-gradient-to-br from-background via-background to-muted/20">
       <div className="max-w-7xl mx-auto">
+        {/* The Tab to switch like apply and manage leave */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
@@ -30,9 +31,11 @@ export default function LeavePage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="manage" className="space-y-6">
+            {/* Manage the all leave */}
             <ManageLeave />
           </TabsContent>
           <TabsContent value="apply" className="space-y-6">
+            {/* Apply for leave request */}
             <ApplyLeave />
           </TabsContent>
         </Tabs>

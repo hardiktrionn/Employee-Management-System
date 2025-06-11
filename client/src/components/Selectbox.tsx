@@ -12,13 +12,13 @@ interface SelectboxProps {
   error?: string;
 }
 
-const Selectbox: React.FC<SelectboxProps> = ({
+const Selectbox = ({
   label,
   value,
   setValue,
   options,
   error,
-}) => {
+}:SelectboxProps) => {
   return (
     <div>
       <label

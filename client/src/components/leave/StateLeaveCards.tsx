@@ -12,6 +12,7 @@ interface StateLeaveCardsProps {
     rejected: number;
   };
 }
+// show the diffent stats number
 const StateLeaveCards = ({ stats }:StateLeaveCardsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

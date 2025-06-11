@@ -25,6 +25,7 @@ export default function AdminDashboard() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { employee } = useSelector((state: RootState) => state.admin);
+  // Main page show current total user with some static value
   const [statsCards, setStatsCards] = useState<StatsCard[]>([
     {
       icon: FiUsers,
@@ -37,6 +38,7 @@ export default function AdminDashboard() {
     },
   ]);
 
+  // if employee change then value are update.
   useEffect(() => {
     setStatsCards((prev) =>
       prev.map((card) =>
@@ -47,7 +49,7 @@ export default function AdminDashboard() {
     );
   }, [employee]);
 
-
+// Fetch all employee 
 useEffect(() => {
   const fetchAllEmployee = async (): Promise<void> => {
     try {
@@ -73,8 +75,6 @@ useEffect(() => {
 
   fetchAllEmployee();
 }, [dispatch]); 
-
-
 
 
   return (

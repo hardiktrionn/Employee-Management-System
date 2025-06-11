@@ -3,6 +3,7 @@ import userSlice from "../redux/userSlice";
 import adminSlice from "../redux/adminSlice";
 import leaveSlice from "../redux/leaveSlice"
 
+// main store
 const store = configureStore({
   reducer: {
     user: userSlice,

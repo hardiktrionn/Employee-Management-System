@@ -11,7 +11,7 @@ interface AuthHandlerProps {
   params: Promise<Params>
 }
 
-const AuthHandler: React.FC<AuthHandlerProps> = ({ params }) => {
+const AuthHandler= ({ params }:AuthHandlerProps) => {
   const router = useRouter();
   const token = use(params)
 

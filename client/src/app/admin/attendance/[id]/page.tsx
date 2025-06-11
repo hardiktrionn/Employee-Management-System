@@ -35,6 +35,7 @@ interface AuthHandlerProps {
 export default function AttendanceSlug({ params }: AuthHandlerProps) {
   const { id } = use(params);
 
+  // get the first date of this month
   const startOfMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`;
   const [data, setData] = useState<AttendanceData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +44,10 @@ export default function AttendanceSlug({ params }: AuthHandlerProps) {
     endDate: new Date().toISOString().split("T")[0],
   });
 
+  /**
+   * fetch the user attendance.
+   * the attendance are fetch the data between month first date to current date. 
+   */
   const fetchAttendanceData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -64,6 +69,7 @@ export default function AttendanceSlug({ params }: AuthHandlerProps) {
     }
   }, [id, selectionRange.startDate, selectionRange.endDate]);
 
+  // user change to refetch data
   useEffect(() => {
     if (id) {
       fetchAttendanceData();

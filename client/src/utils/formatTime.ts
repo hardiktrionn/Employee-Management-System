@@ -1,4 +1,4 @@
-// utils/formatTime.ts
+// conver date into "08:00 PM"
 const formatTime = (dateStr: string | null | undefined): string => {
   if (!dateStr) return "";
 

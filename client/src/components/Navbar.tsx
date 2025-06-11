@@ -8,11 +8,12 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { setUser } from "../redux/userSlice";
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter()
   const user = useSelector((state: RootState) => state.user.user);
 
+  // handle user logout
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/logout", {
@@ -29,7 +30,7 @@ const Navbar: React.FC = () => {
           toast.error(data.message)
         }
       }
-    } catch (err) {
+    } catch (err) { // Unexpected error handling
       toast.error("Something went wrong");
     }
 

@@ -25,7 +25,6 @@ import {
 import { MdExitToApp } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { calculateDays } from "@/utils/calculateDays";
 
 interface ErrorHandler {
@@ -43,9 +42,9 @@ export default function LeavePage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
   const [error, setError] = useState<ErrorHandler>({});
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+// apply for leave request
+  const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       const res = await fetch("/api/leave/register-leave", {
@@ -75,13 +74,14 @@ export default function LeavePage() {
           toast.error(data.message?.server);
         }
       }
-    } catch (err) {
+    } catch (err) { // Unexpected error handling
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // change the duration of leave request
   useEffect(() => {
     if (startDate && endDate) {
       let res = calculateDays(startDate, endDate);

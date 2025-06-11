@@ -18,7 +18,7 @@ const sidebarItems: SidebarItem[] = [
   { icon: MdExitToApp, label: "Leave", path: "/admin/leave" },
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const pathname = usePathname();
 
   return (

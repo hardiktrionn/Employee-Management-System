@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 import { CgEye } from "react-icons/cg";
 import {
-  FaCheck,
+  
   FaChevronLeft,
   FaChevronRight,
   FaFilter,
@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { IoClose, IoSearchSharp } from "react-icons/io5";
+import {  IoSearchSharp } from "react-icons/io5";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -86,6 +86,7 @@ const ManageLeave = () => {
   const { leave } = useSelector((state: RootState) => state.leave);
   const dispatch = useDispatch();
 
+  // Fetch the user leave request
   const fetchLeaveData = useCallback(async () => {
     if (!user?.employeeId) return;
 
@@ -109,12 +110,14 @@ const ManageLeave = () => {
     }
   }, [user?.employeeId, dispatch]);
 
+  // if user change to refetch leave request
   useEffect(() => {
     if (user) {
       fetchLeaveData();
     }
   }, [user, fetchLeaveData]);
 
+  // update leave request state when data a load
   const stats: Stats = {
     total: leave.length,
     pending: leave.filter((l) => l.status === "Pending").length,
@@ -122,6 +125,7 @@ const ManageLeave = () => {
     rejected: leave.filter((l) => l.status === "Rejected").length,
   };
 
+  // Short the leave request according column
   const sortedLeaveRequests = [...leave].sort((a, b) => {
     if (!sortColumn) return 0;
 
@@ -153,6 +157,8 @@ const ManageLeave = () => {
 
     return sortDirection === "asc" ? comparison : -comparison;
   });
+
+  // change the short column
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -162,6 +168,7 @@ const ManageLeave = () => {
     }
   };
 
+  // filtered leave request according leave status
   const filteredLeaveRequests = sortedLeaveRequests.filter((leave) => {
     const matchesSearch =
       leave.leaveType.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -173,13 +180,16 @@ const ManageLeave = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // count the total page for a pagination
   const totalPages = Math.ceil(filteredLeaveRequests.length / 10);
 
+  // Show only current page data accroding total pages
   const paginatedLeaveRequests = filteredLeaveRequests.slice(
     (currentPage - 1) * 10,
     currentPage * 10
   );
 
+  // show different badge for leave status
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case "Approved":
@@ -193,6 +203,7 @@ const ManageLeave = () => {
     }
   };
 
+  // delete the leave request if they in pedning stage
   const handleDeleteLeave = async (id: string) => {
     try {
       setIsLoading(true);

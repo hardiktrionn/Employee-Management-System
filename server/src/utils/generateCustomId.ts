@@ -1,5 +1,6 @@
 import Counter from "../schema/counterSchema";
 
+// Generate the unique employee id
 const generateCustomId = async (
   typePrefix: string,
   counterKey: string

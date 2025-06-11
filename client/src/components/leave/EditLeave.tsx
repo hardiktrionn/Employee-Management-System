@@ -28,7 +28,6 @@ import { Leave, setLeave } from "@/redux/leaveSlice";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { stat } from "fs";
 import { calculateDays } from "@/utils/calculateDays";
 
 interface ErrorHandler {
@@ -61,6 +60,7 @@ const EditLeave = ({
   const { leave } = useSelector((state: RootState) => state.leave);
   const dispatch = useDispatch();
 
+  // update the state see details
   useEffect(() => {
     if (selectedLeave) {
       setLeaveType(selectedLeave.leaveType);
@@ -70,6 +70,7 @@ const EditLeave = ({
     }
   }, [selectedLeave]);
 
+  // change duration of start and endData change
   useEffect(() => {
     if (startDate && endDate) {
       let res = calculateDays(startDate, endDate);
@@ -77,7 +78,8 @@ const EditLeave = ({
     }
   }, [startDate, endDate]);
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  // Update the leave request
+  const handleEditSubmit = async (e) => {
     try {
       e.preventDefault();
       const res = await fetch(`../api/leave/edit/${selectedLeave?._id}`, {
@@ -124,7 +126,8 @@ const EditLeave = ({
           toast.error(data.message?.server);
         }
       }
-    } catch (err) {
+    } catch (err) { 
+      // Unexpected error handling
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);

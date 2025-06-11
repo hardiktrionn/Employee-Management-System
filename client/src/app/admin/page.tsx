@@ -17,6 +17,7 @@ export default function Home() {
 
   const user = useSelector((state: RootState) => state.user.user) as User | null;
 
+  // validate the admin 
   useEffect(() => {
     if (user) {
       if (user.role === "admin") {

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "./userSlice";
 
+// interfaces
 export interface Leave {
   employee: {
     name: string,
@@ -27,6 +28,7 @@ interface AdminState {
   error: string | null;
 }
 
+// initialState value
 const initialState: AdminState = {
   employee: [],
   leave: [],

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Attendance from "../schema/attendanceSchema"; // adjust import path
 
+// date conver into "2025-06-11"
 const formatDate = (): string => {
   return new Date().toISOString().split("T")[0]
 };
@@ -10,6 +11,7 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
+// fetch user all attendance thief their id
 export const getUserAllAttendance = async (
   req: AuthenticatedRequest,
   res: Response
@@ -20,6 +22,10 @@ export const getUserAllAttendance = async (
   const endDate = req.query?.endDate ? new Date(req.query.endDate as string) : null;
 
   try {
+    /**
+     * employee attendance fetch between this month first to current date
+     * the counth the each employee total working hours and days
+     */
     const result = await Attendance.aggregate([
       {
         $lookup: {
@@ -67,6 +73,7 @@ export const getUserAllAttendance = async (
   }
 };
 
+// Get all employee attendance
 export const getAllAttendance = async (
   req: AuthenticatedRequest,
   res: Response
@@ -111,12 +118,16 @@ export const getAllAttendance = async (
     }
 
     res.status(200).json({ success: true, data: result });
-  } catch (err) {
+  } catch (err) { // Unexpected error handling
     console.error("Error in getAllAttendance:", err);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
+/**
+ * action:checkin
+ * validate: the allready checkin or not
+ */
 export const checkIn = async (
   req: AuthenticatedRequest,
   res: Response
@@ -162,6 +173,12 @@ export const checkIn = async (
   }
 };
 
+/**
+ * action:checkOut
+ * validate: 
+ *        first checkin or not
+ *         the allready checkout or not
+ */
 export const checkOut = async (
   req: AuthenticatedRequest,
   res: Response
@@ -222,6 +239,13 @@ export const checkOut = async (
   }
 };
 
+/**
+  * action:breakIn
+ * validate: 
+ *        first checkin or not
+ *        then checkout or not
+ *        if allready take break or not
+ */
 export const breakIn = async (
   req: AuthenticatedRequest,
   res: Response
@@ -275,6 +299,14 @@ export const breakIn = async (
     });
   }
 };
+
+/**
+ * action:breakIn
+ * validate: 
+ *        first checkin or not
+ *        then checkout or not
+ *        then take break or not
+ */
 
 export const breakOut = async (
   req: AuthenticatedRequest,

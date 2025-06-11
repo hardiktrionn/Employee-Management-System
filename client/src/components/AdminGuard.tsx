@@ -1,20 +1,18 @@
-import { useEffect, ReactNode, useState } from "react";
+import { useEffect,  useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../lib/store";
 import { setUser } from "../redux/userSlice";
 
-interface AuthGuardProps {
-  children: ReactNode;
-}
-
-const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
+// validate the admin
+const AuthGuard = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
 
+  // every page the to validate user are admin or not
   useEffect(() => {
     if (!user && !checked) {
       const verifyAuth = async () => {

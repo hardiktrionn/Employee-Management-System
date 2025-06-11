@@ -10,6 +10,7 @@ import removeImage from "../utils/removeImage";
 import generateSecureOTP from "../utils/otpGenerate";
 import generateCustomId from "../utils/generateCustomId";
 
+// interfaces
 interface AuthRequest extends Request {
   user?: { id: string; role: string };
   file?: Express.Multer.File;
@@ -35,6 +36,7 @@ interface JwtPayload {
 }
 
 
+//register the employee
 export const registerEmployee = async (req: Request, res: Response): Promise<void> => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -75,6 +77,7 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
   }
 };
 
+// login the user
 export const loginEmployee = async (req: Request, res: Response): Promise<void> => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -133,6 +136,7 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
     res.cookie("token", generateToken({ id: (user._id as string) }));
     res.status(200).json({ success: true, user, message: "Successfully logged in" });
   } catch (error: any) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: { server: error.message || "Server Error" },
@@ -140,6 +144,7 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
   }
 };
 
+// update profile
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   const error = validationResult(req);
   const newProfilePhoto = req.file?.filename || null;
@@ -183,6 +188,7 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
+// get employee details
 export const getEmployee = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await Employee.findById(req.user?.id).select("-password");
@@ -196,6 +202,7 @@ export const getEmployee = async (req: AuthRequest, res: Response): Promise<void
   }
 };
 
+// change the employee password
 export const changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -226,6 +233,7 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
+// forget the employee password thorw a link
 export const forgetPassword = async (req: Request, res: Response): Promise<void> => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -261,6 +269,7 @@ export const forgetPassword = async (req: Request, res: Response): Promise<void>
   }
 };
 
+// vefiry the forget password link
 export const verifyLink = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email } = req.query;
@@ -298,6 +307,7 @@ export const verifyLink = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// update the user password
 export const newPassword = async (
   req: NewPasswordRequest,
   res: Response
@@ -382,6 +392,7 @@ export const newPassword = async (
   }
 };
 
+// verify the multi-factor-auth
 export const mfaVerification = async (
   req: MfaVerificationRequest,
   res: Response

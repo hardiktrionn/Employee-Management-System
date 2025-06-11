@@ -1,4 +1,3 @@
-
 interface InputboxProps {
   label: string;
   type?: string;
@@ -9,7 +8,7 @@ interface InputboxProps {
   error?: string;
 }
 
-const Inputbox: React.FC<InputboxProps> = ({
+const Inputbox = ({
   label,
   type = "text",
   placeholder = "",
@@ -17,7 +16,7 @@ const Inputbox: React.FC<InputboxProps> = ({
   value,
   setValue,
   error,
-}) => {
+}: InputboxProps) => {
   return (
     <div>
       <label

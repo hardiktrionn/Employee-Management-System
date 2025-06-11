@@ -11,12 +11,14 @@ interface TwoStepauthProps {
   email?: string;
 }
 
-const TwoStepauth: React.FC<TwoStepauthProps> = ({ email }) => {
+
+const TwoStepauth = ({ email }:TwoStepauthProps) => {
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<{ [key: string]: string }>({});
 
+  // check the user email
   useEffect(() => {
     if (!email) {
       toast.error("No email provided for verification.");
@@ -24,6 +26,7 @@ const TwoStepauth: React.FC<TwoStepauthProps> = ({ email }) => {
     }
   }, [email, router]);
 
+  // vefiry the user otp 
   const handleVerify = async () => {
     setIsLoading(true);
     try {

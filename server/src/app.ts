@@ -12,14 +12,16 @@ import attendanceRoute from "./routes/attendanceRoute";
 import { isAdmin, isAuthenticated } from "./middleware/auth";
 import leaveRoute from "./routes/leaveRoute"
 import fs from "fs"
+import { RequestHandler } from "express";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
+// connect with mongodb
 connectDb();
 
 require("./config/passport");
-
 app.use(cookieParser());
 app.use(express.json());
 
@@ -62,16 +64,18 @@ app.use("/uploads/:filename", isAuthenticated as RequestHandler, (req: Request, 
   });
 });
 app.use("/api/auth", authRoutes);
-import { RequestHandler } from "express";
-import path from "path";
 
+
+// employee route
 app.use(
   "/api/employee",
   isAuthenticated as RequestHandler,
   isAdmin as RequestHandler,
   employeeRoute
 );
+// attendance route
 app.use("/api/attendance", isAuthenticated as RequestHandler, attendanceRoute);
+// leave request route
 app.use("/api/leave", isAuthenticated as Handler, leaveRoute)
 
 app.listen(3001, () => {

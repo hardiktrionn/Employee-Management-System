@@ -1,5 +1,6 @@
 import { body, ValidationChain } from "express-validator";
 
+// employee registeration validation
 export const registerValidator: ValidationChain[] = [
   body("name")
     .notEmpty().withMessage("Name is required")
@@ -19,6 +20,7 @@ export const registerValidator: ValidationChain[] = [
     }),
 ];
 
+// employee login validation
 export const loginValidator: ValidationChain[] = [
   body("email")
     .notEmpty().withMessage("Email is required")
@@ -28,6 +30,7 @@ export const loginValidator: ValidationChain[] = [
     .isLength({ min: 6, max: 40 }).withMessage("Password length must be 6 to 40 characters"),
 ];
 
+// employee new password validation
 export const newPasswordValidator: ValidationChain[] = [
   body("password")
     .notEmpty().withMessage("New Password is required")
@@ -41,6 +44,7 @@ export const newPasswordValidator: ValidationChain[] = [
     }),
 ];
 
+// employee change-password validation
 export const changePasswordValidator: ValidationChain[] = [
   body("password")
     .notEmpty().withMessage("Current Password is required")
@@ -63,6 +67,7 @@ export const changePasswordValidator: ValidationChain[] = [
     }),
 ];
 
+// employee Update profile validation
 export const updateProfileValidator: ValidationChain[] = [
   body("name")
     .trim()
