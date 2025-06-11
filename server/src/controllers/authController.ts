@@ -98,7 +98,7 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
       return
     }
 
-    if (!user.password && (user.googleId || user.facebookId)) {
+    if (!user.password && (user.googleId || user.facebookId) && user.role == "employee") {
       res.status(400).json({
         success: false,
         message: { server: "Use social login" },
@@ -471,15 +471,15 @@ export const nextAuth = async (req: Request, res: Response): Promise<void> => {
       });
       userId = emp._id;
     }
-    let token=generateToken({ id: userId as string })
-    res.cookie("token",token , {
+    let token = generateToken({ id: userId as string })
+    res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ success: true ,token});
+    res.status(200).json({ success: true, token });
     return
   } catch (error) {
     console.error(error);

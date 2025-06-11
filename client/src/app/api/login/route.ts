@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
 
         return nextResponse;
     } catch (error: any) {
-        console.log(error);
         const status = error.response?.status || 500;
         const message = error.response?.data || { server: "Server error" };
 

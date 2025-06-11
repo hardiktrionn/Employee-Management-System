@@ -109,7 +109,7 @@ export default function AdminLeavePage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [dispatch]);
 
   // if user change then refetch the data
   useEffect(() => {
