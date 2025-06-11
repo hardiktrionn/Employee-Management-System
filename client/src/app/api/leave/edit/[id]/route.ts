@@ -6,8 +6,9 @@ export async function PUT(req: NextRequest,{params}:{ params: Promise<{ id: stri
 
 
     try {
+         const body = await req.json();
         const {id}=await params
-        const response = await axiosInstance.put(`/leave/edit/${id}`, req.body, {
+        const response = await axiosInstance.put(`/leave/edit/${id}`, body, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },

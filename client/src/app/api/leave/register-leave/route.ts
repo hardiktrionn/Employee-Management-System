@@ -3,9 +3,9 @@ import axiosInstance from "@/utils/axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-
     try {
-        const response = await axiosInstance.post(`/leave/apply`, req.body, {
+        const body= await req.json()
+        const response = await axiosInstance.post(`/leave/apply`, body, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
         return nextResponse
     } catch (error: any) {
-
+        console.log(error)
         const status = error.response?.status || 500;
         const message = error.response?.data || { error: "Server error" };
         return NextResponse.json(message, { status });

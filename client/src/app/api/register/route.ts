@@ -5,7 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
 
     try {
-        const response = await axiosInstance.post(`/auth/register`, req.body);
+         const body = await req.json();
+        const response = await axiosInstance.post(`/auth/register`, body);
 
 
         // Forward the cookie from Express to browser
