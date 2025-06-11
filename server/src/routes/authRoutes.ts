@@ -1,5 +1,4 @@
 import express, { Request, Response, RequestHandler } from "express";
-import passport from "passport";
 import uploadMiddleware from "../middleware/multer";
 import { isAuthenticated } from "../middleware/auth";
 import {
@@ -18,9 +17,9 @@ import {
   verifyLink,
   mfaVerification,
   newPassword,
-  changePassword
+  changePassword,
+  nextAuth
 } from "../controllers/authController";
-import generateToken from "../utils/generateToken";
 import { body } from "express-validator";
 
 const router = express.Router();
@@ -73,38 +72,6 @@ router.post(
   mfaVerification
 );
 
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req: Request & { user?: any }, res: Response) => {
-    const { _id } = req.user;
-    const token = generateToken({ id: _id });
-    res.cookie("token", token);
-    res.redirect(`${process.env.CLIENT_HOST}/auth/${token}`);
-  }
-);
-
-router.get(
-  "/facebook",
-  passport.authenticate("facebook", { scope: ["email"] })
-);
-
-router.get(
-  "/facebook/callback",
-  passport.authenticate("facebook", {
-    failureRedirect: `${process.env.CLIENT_HOST}/Login`,
-  }),
-  (req: Request & { user?: any }, res: Response) => {
-    const { _id } = req.user;
-    const token = generateToken({ id: _id });
-    res.cookie("token", token);
-    res.redirect(`${process.env.CLIENT_HOST}/auth/${token}`);
-  }
-);
+router.post("/oauth/:provider",nextAuth)
 
 export default router;

@@ -2,11 +2,12 @@
 import axiosInstance from "@/utils/axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(req: NextRequest,{params}) {
+export async function PUT(req: NextRequest,{params}:{ params: Promise<{ id: string }> }) {
 
 
     try {
-        const response = await axiosInstance.put(`/leave/edit/${params.id}`, req.body, {
+        const {id}=await params
+        const response = await axiosInstance.put(`/leave/edit/${id}`, req.body, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },

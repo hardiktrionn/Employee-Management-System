@@ -57,7 +57,7 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
       return
     }
 
-    const employeeId = await generateCustomId("Emp", "employeeId");
+    const employeeId = await generateCustomId();
     const hashPassword = await bcrypt.hash(password, 10);
     const user = await Employee.create({
       name,
@@ -445,5 +445,44 @@ export const mfaVerification = async (
       success: false,
       message: { server: error.message || "Token is Expired" },
     });
+  }
+};
+export const nextAuth = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id, name, profilePhoto, email } = req.body;
+    const { provider } = req.params;
+
+    let userId;
+
+    const isExists = await Employee.findOne({
+      $or: [{ googleId: id }, { facebookId: id }, { email }],
+    }).select("_id");
+
+    if (isExists) {
+      userId = isExists._id;
+    } else {
+      const emp = await Employee.create({
+        name,
+        email,
+        profilePhoto,
+        employeeId: generateCustomId(),
+        googleId: provider === "google" ? id : undefined,
+        facebookId: provider === "facebook" ? id : undefined,
+      });
+      userId = emp._id;
+    }
+    let token=generateToken({ id: userId as string })
+    res.cookie("token",token , {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ success: true ,token});
+    return
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

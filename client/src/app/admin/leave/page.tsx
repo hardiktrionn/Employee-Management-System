@@ -295,7 +295,7 @@ export default function AdminLeavePage() {
   };
 
   // if leave request are loading stage to see loader
-  if(isLoading)return <LeaveSkeleton/>
+  if (isLoading) return <LeaveSkeleton />;
   return (
     <div className="p-8 bg-gradient-to-br from-background via-background to-muted/20 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -307,7 +307,7 @@ export default function AdminLeavePage() {
             Manage and approve leave requests across the organization.
           </p>
         </div>
-{/*All Tabs */}
+        {/*All Tabs */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
@@ -464,146 +464,183 @@ export default function AdminLeavePage() {
 
                 {/* Leave Requests Table */}
                 <div className="rounded-md border">
-                 <Table>
-  <TableHeader>
-    <TableRow>
-      <TableHead className="w-12">
-        <Checkbox
-          checked={filteredLeaveRequests.length > 0 && selectedRequests.length === filteredLeaveRequests.length}
-          onCheckedChange={handleSelectAll}
-        />
-      </TableHead>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">
+                          <Checkbox
+                            checked={
+                              filteredLeaveRequests.length > 0 &&
+                              selectedRequests.length ===
+                                filteredLeaveRequests.length
+                            }
+                            onCheckedChange={handleSelectAll}
+                          />
+                        </TableHead>
 
-      {[
-        { label: "Employee", key: ".employee.name" },
-        { label: "Type", key: "type" },
-        { label: "Days", key: "Days" },
-        { label: "Duration", key: "duration" },
-        { label: "Status", key: "status" },
-      ].map((col) => (
-        <TableHead
-          key={col.key}
-          className="cursor-pointer hover:bg-muted/50"
-          onClick={() => handleSort(col.key)}
-        >
-          <div className="flex items-center">
-            {col.label}
-            {sortColumn === col.key && <LuArrowUpDown className="ml-2 h-4 w-4" />}
-          </div>
-        </TableHead>
-      ))}
+                        {[
+                          { label: "Employee", key: ".employee.name" },
+                          { label: "Type", key: "type" },
+                          { label: "Days", key: "Days" },
+                          { label: "Duration", key: "duration" },
+                          { label: "Status", key: "status" },
+                        ].map((col) => (
+                          <TableHead
+                            key={col.key}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleSort(col.key)}
+                          >
+                            <div className="flex items-center">
+                              {col.label}
+                              {sortColumn === col.key && (
+                                <LuArrowUpDown className="ml-2 h-4 w-4" />
+                              )}
+                            </div>
+                          </TableHead>
+                        ))}
 
-      <TableHead>Actions</TableHead>
-    </TableRow>
-  </TableHeader>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
 
-  <TableBody>
-    {paginatedLeaveRequests.length === 0 ? (
-      <TableRow>
-        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-          No leave requests found
-        </TableCell>
-      </TableRow>
-    ) : (
-      paginatedLeaveRequests.map((request) => (
-        <TableRow key={request._id}>
-          <TableCell>
-            <Checkbox
-              checked={selectedRequests.includes(request._id)}
-              onCheckedChange={() => handleSelectRequest(request._id)}
-            />
-          </TableCell>
+                    <TableBody>
+                      {paginatedLeaveRequests.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={9}
+                            className="text-center py-8 text-muted-foreground"
+                          >
+                            No leave requests found
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        paginatedLeaveRequests.map((request) => (
+                          <TableRow key={request._id}>
+                            <TableCell>
+                              {request.status === "Pending" && (
+                                <Checkbox
+                                  checked={selectedRequests.includes(
+                                    request._id
+                                  )}
+                                  onCheckedChange={() =>
+                                    handleSelectRequest(request._id)
+                                  }
+                                />
+                              )}
+                            </TableCell>
 
-          {/* Employee Cell */}
-          <TableCell>
-            <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={request.employee.profilePhoto || "/placeholder.svg"} />
-                <AvatarFallback className="text-xs">
-                  {request.employee.name.split(" ").map((n) => n[0]).join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div className="font-medium">{request.employee.name}</div>
-            </div>
-          </TableCell>
+                            {/* Employee Cell */}
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar className="w-8 h-8">
+                                  <AvatarImage
+                                    src={
+                                      request.employee.profilePhoto ||
+                                      "/placeholder.svg"
+                                    }
+                                  />
+                                  <AvatarFallback className="text-xs">
+                                    {request.employee.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="font-medium">
+                                  {request.employee.name}
+                                </div>
+                              </div>
+                            </TableCell>
 
-          {/* Leave Type */}
-          <TableCell>{request.leaveType}</TableCell>
+                            {/* Leave Type */}
+                            <TableCell>{request.leaveType}</TableCell>
 
-          {/* Days */}
-          <TableCell>
-            <div className="text-sm">
-              <div>{format(new Date(request.startDate), "dd MMM")}</div>
-              <div className="text-muted-foreground">
-                to {format(new Date(request.endDate), "dd MMM")}
-              </div>
-            </div>
-          </TableCell>
+                            {/* Days */}
+                            <TableCell>
+                              <div className="text-sm">
+                                <div>
+                                  {format(
+                                    new Date(request.startDate),
+                                    "dd MMM"
+                                  )}
+                                </div>
+                                <div className="text-muted-foreground">
+                                  to{" "}
+                                  {format(new Date(request.endDate), "dd MMM")}
+                                </div>
+                              </div>
+                            </TableCell>
 
-          {/* Duration */}
-          <TableCell>{request.duration}</TableCell>
+                            {/* Duration */}
+                            <TableCell>{request.duration}</TableCell>
 
-          {/* Status */}
-          <TableCell>
-            <Badge variant={getStatusBadgeVariant(request.status) as any}>
-              {request.status}
-            </Badge>
-          </TableCell>
+                            {/* Status */}
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  getStatusBadgeVariant(request.status) as any
+                                }
+                              >
+                                {request.status}
+                              </Badge>
+                            </TableCell>
 
-          {/* Actions */}
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <FiMoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
+                            {/* Actions */}
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    <FiMoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setSelectedLeave(request);
-                    setViewDetailsOpen(true);
-                  }}
-                >
-                  <IoEyeOutline className="mr-2 h-4 w-4" />
-                  View Details
-                </DropdownMenuItem>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedLeave(request);
+                                      setViewDetailsOpen(true);
+                                    }}
+                                  >
+                                    <IoEyeOutline className="mr-2 h-4 w-4" />
+                                    View Details
+                                  </DropdownMenuItem>
 
-                {request.status === "Pending" && (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setActionType("approve");
-                        setSelectedLeave(request);
-                        setActionSheetOpen(true);
-                      }}
-                    >
-                      <FaCheck className="mr-2 h-4 w-4" />
-                      Approve
-                    </DropdownMenuItem>
+                                  {request.status === "Pending" && (
+                                    <>
+                                      <DropdownMenuItem
+                                        onClick={() => {
+                                          setActionType("approve");
+                                          setSelectedLeave(request);
+                                          setActionSheetOpen(true);
+                                        }}
+                                      >
+                                        <FaCheck className="mr-2 h-4 w-4" />
+                                        Approve
+                                      </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setActionType("reject");
-                        setSelectedLeave(request);
-                        setActionSheetOpen(true);
-                      }}
-                    >
-                      <IoClose className="mr-2 h-4 w-4" />
-                      Reject
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
-      ))
-    )}
-  </TableBody>
-</Table>
-
+                                      <DropdownMenuItem
+                                        onClick={() => {
+                                          setActionType("reject");
+                                          setSelectedLeave(request);
+                                          setActionSheetOpen(true);
+                                        }}
+                                      >
+                                        <IoClose className="mr-2 h-4 w-4" />
+                                        Reject
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
 
                 {/* Pagination */}

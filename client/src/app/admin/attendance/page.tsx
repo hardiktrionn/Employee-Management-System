@@ -2,10 +2,11 @@
 
 import { AiOutlineEye, AiOutlineSearch } from "react-icons/ai";
 import Link from "next/link";
-import { useEffect, useState, ChangeEvent, use } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Image from "next/image";
 import TableSkeleton from "@/components/skelton/TableSkeleton";
+import { Avatar } from "@radix-ui/react-avatar";
+import { AvatarImage } from "@/components/ui/avatar";
 
 interface EmployeeData {
   employeeId: string;
@@ -107,13 +108,14 @@ export default function Attendance() {
                 <tr key={i} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Image
-                        height={80}
-                        width={80}
+                      <Avatar className="w-8 h-8">
+                      <AvatarImage
+                      
                         className="h-8 w-8 rounded-full"
                         src={item?.profile || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
                         alt={"img"}
                       />
+                      </Avatar>
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">{item?.name}</div>
                       </div>

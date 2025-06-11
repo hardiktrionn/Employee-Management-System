@@ -4,10 +4,10 @@ import axiosInstance from "@/utils/axios";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export  async function GET(req: NextRequest,{params}) {
-   
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     try {
-        const response = await axiosInstance.get(`/employee/${params.id}`, {
+        const response = await axiosInstance.get(`/employee/${id}`, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },
@@ -16,7 +16,7 @@ export  async function GET(req: NextRequest,{params}) {
     } catch (error: any) {
         const status = error.response?.status || 500;
         const message = error.response?.data || { error: "Server error" };
-        return NextResponse.json(message,{status});
+        return NextResponse.json(message, { status });
     }
 
 }

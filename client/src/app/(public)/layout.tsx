@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 
 const UserLayout = async({ children }) => {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const cookiesToken = cookieStore.get("token")?.value;
 
-  if (token) {
+  if (cookiesToken) {
     redirect("/dashboard");
   }
 

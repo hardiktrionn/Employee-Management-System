@@ -1,16 +1,10 @@
-// /api/attendance/action/[action]/route.ts
-
-/**
- * perform the attendance action  
- * actions:checkin,checkout,breakin,breakout
- * */ 
 import axiosInstance from "@/utils/axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { action: string } }) {
-
+export async function GET(req: NextRequest, { params }: { params: Promise<{ action: string }> }) {
+    const { action } = await params
     try {
-        const response = await axiosInstance.get(`/attendance/${params.action}`, {
+        const response = await axiosInstance.get(`/attendance/${action}`, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },
@@ -21,5 +15,4 @@ export async function GET(req: NextRequest, { params }: { params: { action: stri
         const message = error.response?.data || { error: "Server error" };
         return NextResponse.json(message, { status });
     }
-
 }

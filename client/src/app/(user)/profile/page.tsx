@@ -55,6 +55,7 @@ const ProfilePage = () => {
               <AvatarImage
                 src={profilePhoto || "/placeholder.svg"}
                 alt={`${name}'s Profile`}
+                className="object-cover rounded-full w-20 h-20"
               />
               <AvatarFallback>
                 <FaUser className="w-10 h-10" />

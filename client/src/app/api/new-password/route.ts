@@ -2,15 +2,15 @@
 import axiosInstance from '@/utils/axios';
 import { NextRequest, NextResponse } from 'next/server';
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
 
     try {
         const response = await axiosInstance.post(`/auth/new-password`, req.body);
 
-       return NextResponse.json(response.data);
+        return NextResponse.json(response.data);
     } catch (error: any) {
         const status = error.response?.status || 500;
         const message = error.response?.data || { error: "Server error" };
-       return NextResponse.json(message, {status});
+        return NextResponse.json(message, { status });
     }
 }

@@ -2,7 +2,7 @@
 import axiosInstance from '@/utils/axios';
 import { NextRequest, NextResponse } from 'next/server';
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
 
     try {
         const response = await axiosInstance.post(`/auth/register`, req.body);
@@ -18,7 +18,7 @@ export default async function POST(req: NextRequest) {
         }
 
 
-       return NextResponse.json(response.data);
+       return nextResponse
     } catch (error: any) {
         const status = error.response?.status || 500;
         const message = error.response?.data || { error: "Server error" };

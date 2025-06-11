@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 
 const Inputbox = dynamic(() => import("../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../components/Button"));

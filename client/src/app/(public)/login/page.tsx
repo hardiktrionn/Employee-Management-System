@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { signIn } from "next-auth/react";
 
 const Inputbox = dynamic(() => import("../../../components/Inputbox"));
 const Button = dynamic(() => import("../../../components/Button"));
@@ -20,21 +21,12 @@ interface Error {
 }
 const LoginClient = () => {
   const router = useRouter();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isMfaAuth, setIsMfaAuth] = useState<boolean>(false);
   const [error, setError] = useState<Error>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const googleLogin = () => {
-    window.open(`${process.env.NEXT_PUBLIC_SERVER_HOST}/auth/google`, "_self");
-  };
-
-  const facebookLogin = () => {
-    window.open(
-      `${process.env.NEXT_PUBLIC_SERVER_HOST}/auth/facebook`,
-      "_self"
-    );
-  };
 
   /**
    * user login throw a email or password
@@ -125,14 +117,14 @@ const LoginClient = () => {
 
                 <div className="space-x-6 flex justify-center">
                   <button
-                    onClick={googleLogin}
+                    onClick={() => signIn("google")}
                     className="border-0 outline-0 cursor-pointer  disabled:cursor-no-drop"
                     disabled={isLoading}
                   >
                     <FcGoogle size={30} />
                   </button>
                   <button
-                    onClick={facebookLogin}
+                    onClick={() => signIn("facebook")}
                     className="border-0 outline-0 cursor-pointer disabled:cursor-no-drop"
                     disabled={isLoading}
                   >

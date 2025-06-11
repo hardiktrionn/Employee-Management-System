@@ -2,10 +2,11 @@
 import axiosInstance from "@/utils/axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest, { params }) {
+export async function DELETE(req: NextRequest, { params }:{ params: Promise<{ id: string }> }) {
 
     try {
-        const response = await axiosInstance.delete(`/leave/delete/${params.id}`, {
+        const {id}=await params
+        const response = await axiosInstance.delete(`/leave/delete/${id}`, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },

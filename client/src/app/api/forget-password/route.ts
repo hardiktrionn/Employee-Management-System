@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
 
     try {
         const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/auth/forget-password`, req.body, {

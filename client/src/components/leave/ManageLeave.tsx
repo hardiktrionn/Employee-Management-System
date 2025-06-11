@@ -115,7 +115,7 @@ const ManageLeave = () => {
     if (user) {
       fetchLeaveData();
     }
-  }, [user, fetchLeaveData]);
+  }, [user, fetchLeaveData,dispatch]);
 
   // update leave request state when data a load
   const stats: Stats = {

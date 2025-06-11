@@ -2,13 +2,12 @@
 import axiosInstance from "@/utils/axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(req: NextRequest, { params }: { params: { action: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ action: string }> }) {
   try {
-    console.log(params.action);
-
+    const { action } = await params
     const body = await req.json();
 
-    const response = await axiosInstance.put(`/leave/${params.action}`, body, {
+    const response = await axiosInstance.put(`/leave/${action}`, body, {
       headers: {
         Cookie: req.headers.get("cookie") || "",
       },

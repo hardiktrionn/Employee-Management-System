@@ -11,8 +11,8 @@ import Link from "next/link";
 import type { AppDispatch, RootState } from "../../../lib/store";
 import toast from "react-hot-toast";
 import { setEmployee } from "../../../redux/adminSlice";
-import Image from "next/image";
 import TableSkeleton from "@/components/skelton/TableSkeleton";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 // interfaces
 interface Employee {
@@ -168,13 +168,15 @@ export default function EmployeeDashboard() {
                 <tr key={item._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Image
-                        height={80}
+                      <Avatar className="w-8 h-8">
+                      <AvatarImage
+                     
                         width={80}
                         className="h-8 w-8 rounded-full"
                         src={item.profilePhoto || "/placeholder.svg"}
                         alt={"img"}
                       />
+                      </Avatar>
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">
                           {item.name}

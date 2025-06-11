@@ -6,13 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
  * Fetch the user attendance using thief id
  * the attendance fetch between this month first date to current date
  */
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { searchParams } = new URL(req.url);
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
+    const {id} = await params;
 
     try {
-        const response = await axiosInstance.get(`/attendance/user/${params.id}?startDate=${startDate}&endDate=${endDate}`, {
+        const response = await axiosInstance.get(`/attendance/user/${id}?startDate=${startDate}&endDate=${endDate}`, {
             headers: {
                 Cookie: req.headers.get('cookie') || "",
             },

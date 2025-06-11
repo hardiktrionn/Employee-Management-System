@@ -6,9 +6,10 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
     try {
         const cookie = req.headers.get('cookie') || '';
+        // const { data: token } = useSession()
 
         const response = await axiosInstance.get(`/auth`, {
-            headers: { Cookie: cookie },
+            headers: { Cookie: cookie  },
         });
 
         return NextResponse.json(response.data);

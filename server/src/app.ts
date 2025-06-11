@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import passport from "passport";
 import connectDb from "./utils/db";
 import authRoutes from "./routes/authRoutes";
 import employeeRoute from "./routes/employeeRoutes";
@@ -21,7 +20,6 @@ const app = express();
 // connect with mongodb
 connectDb();
 
-require("./config/passport");
 app.use(cookieParser());
 app.use(express.json());
 
@@ -40,15 +38,11 @@ app.use(
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use("/uploads/:filename", isAuthenticated as RequestHandler, (req: Request, res: Response) => {
   const filename = req.params.filename;
 
-  // Prevent path traversal (e.g., ../../../etc/passwd)
   const safeFilename = path.basename(filename);
-  const filePath = path.join(__dirname, "uploads", safeFilename);
+  const filePath = path.join(__dirname, "../uploads", safeFilename);
 
   if (!fs.existsSync(filePath)) {
     res.status(404).json({ error: "File not found" });

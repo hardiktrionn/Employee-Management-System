@@ -7,7 +7,8 @@ import toast from "react-hot-toast";
 import { AiOutlineHome } from "react-icons/ai";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import { Avatar } from "@radix-ui/react-avatar";
+import { AvatarImage } from "@/components/ui/avatar";
 
 // Dynamic components
 const Inputbox = dynamic(() => import("../../../../components/Inputbox"));
@@ -169,18 +170,18 @@ const EmployeeSlug = ({ params }: { params: Promise<{ id?: string }> }) => {
 
         <div className="flex justify-center mb-4">
           <label htmlFor="profilePhoto" className="cursor-pointer">
-            <Image
-              height={80}
-              width={80}
-              className="w-24 h-24 object-cover rounded-full"
-              src={
-                newPhoto
-                  ? URL.createObjectURL(newPhoto)
-                  : profilePhoto ||
-                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              }
-              alt="Profile"
-            />
+            <Avatar className="w-24 h-24">
+              <AvatarImage
+                className="w-24 h-24 object-cover rounded-full"
+                src={
+                  newPhoto
+                    ? URL.createObjectURL(newPhoto)
+                    : profilePhoto ||
+                      "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                }
+                alt="Profile"
+              />
+            </Avatar>
             <input
               type="file"
               id="profilePhoto"
