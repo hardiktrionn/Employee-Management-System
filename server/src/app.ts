@@ -8,8 +8,10 @@ import connectDb from "./utils/db";
 import authRoutes from "./routes/authRoutes";
 import employeeRoute from "./routes/employeeRoutes";
 import attendanceRoute from "./routes/attendanceRoute";
-import { isAdmin, isAuthenticated } from "./middleware/auth";
+import categoryRoute from "./routes/categoryRoute"
+import postRoute from "./routes/postRoute"
 import leaveRoute from "./routes/leaveRoute"
+import { isAdmin, isAuthenticated } from "./middleware/auth";
 import fs from "fs"
 import { RequestHandler } from "express";
 import path from "path";
@@ -38,7 +40,7 @@ app.use(
   })
 );
 
-app.use("/uploads/:filename", isAuthenticated as RequestHandler, (req: Request, res: Response) => {
+app.use("/uploads/:filename",  (req: Request, res: Response) => {
   const filename = req.params.filename;
 
   const safeFilename = path.basename(filename);
@@ -71,6 +73,8 @@ app.use(
 app.use("/api/attendance", isAuthenticated as RequestHandler, attendanceRoute);
 // leave request route
 app.use("/api/leave", isAuthenticated as Handler, leaveRoute)
+app.use("/api/category", categoryRoute)
+app.use("/api/post", postRoute)
 
 app.listen(3001, () => {
   console.log("Server run in port 3001");
