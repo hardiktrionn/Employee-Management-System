@@ -1,6 +1,23 @@
 import crypto from "crypto";
 
-// generate the 6 digit otp for validation
+/**
+ * Function Name: generateSecureOTP
+ *
+ * Description:
+ * The function generate a 6 digit otp or increase thier length using crypto.
+ *
+ * Parameters:
+ * - `length:the type is number to defined otp length defualt is 6 digit.
+ *
+ * Returns:
+ * - The return a number.
+ * *
+ * Example Usage:
+ * ```
+ *   const response =  generateSecureOTP(6);
+ *   console.log(response); // 122545
+ * ```
+ */
 function generateSecureOTP(length: number = 6): string {
   const digits = "0123456789";
   let otp = "";

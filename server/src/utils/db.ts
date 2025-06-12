@@ -1,6 +1,16 @@
 import mongoose from "mongoose";
 
-// connect with mongoose db
+/**
+ * Function Name: connectDB
+ *
+ * Description:
+ * The function a connect with mongodb.
+ *
+ * Example Usage:
+ * ```
+ *  connectDB();
+ * ```
+ */
 const connectDB = async (): Promise<void> => {
   if (!process.env.MONGO_URL) {
     throw new Error("MONGO_URL is not defined in environment variables");

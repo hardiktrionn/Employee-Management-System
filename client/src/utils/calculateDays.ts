@@ -1,6 +1,22 @@
 
 /**
- * total number of days between the startDate and endDate
+ * Function Name: calculateDays
+ *
+ * Description:
+ * The function calculate total number of days between the startDate and endDate.
+ *
+ * Parameters:
+ * - `startData:the type is Date.
+ * - `endDate:the type is Date.
+ *
+ * Returns:
+ * - The return a number.
+ * *
+ * Example Usage:
+ * ```
+ *   const response =  calculateDays("2025-06-05","2025-06-10");
+ *   console.log(response); // 5
+ * ```
  */
 export const calculateDays = (startDate: Date, endDate: Date) => {
   if (startDate && endDate) {
