@@ -30,7 +30,7 @@ interface CategoryRequest extends Request {
 export const createCategory = async (req: CategoryRequest, res: Response): Promise<void> => {
     try {
         // Get filename from uploaded file
-        req.body.banner = req.file?.originalname || "";
+        req.body.banner = req.file?.filename || "";
 
         // Validate incoming data
         await categoryValidation.validate(req.body);
@@ -45,14 +45,14 @@ export const createCategory = async (req: CategoryRequest, res: Response): Promi
         }
 
         // Build full URL for banner
-        const bannerUrl = `http://localhost:3001/upload/${banner}`;
+        const bannerUrl = `http://localhost:3001/uploads/${banner}`;
 
         // Create and save category
         const category = await Category.create({ name, banner: bannerUrl });
 
-        res.status(201).json({ success: true, category });
+        res.status(201).json({ success: true, message: "Category Succesfully Created", data: category });
     } catch (err: any) {
-        removeImage(req.file?.originalname || "")
+        removeImage(req.file?.filename || "")
         res.status(500).json({
             success: false,
             message: "Server Error",
@@ -107,8 +107,8 @@ export const updateCategory = async (req: Request, res: Response): Promise<void>
         }
 
         // new Banner 
-        const newFilename = req.file?.originalname || category.banner.split("/").pop();
-        const bannerUrl = `http://localhost:3001/upload/${newFilename}`;
+        const newFilename = req.file?.filename || category.banner.split("/").pop();
+        const bannerUrl = `http://localhost:3001/uploads/${newFilename}`;
 
         if (req.file) {
             const oldFile = path.join(__dirname, "..", "public", "upload", category.banner.split("/").pop() || "");

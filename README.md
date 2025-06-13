@@ -12,8 +12,6 @@ A full-stack Employee Management System built with **TypeScript**, **Next.js** (
 - ✅ Role-Based Access (Admin / Employee)
 - ✅ Authentication using JWT
 - ✅ RESTful API structure
-- ✅ Fully responsive UI with modern design
-
 ---
 
 ## 📂 Tech Stack

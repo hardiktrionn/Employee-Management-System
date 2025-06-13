@@ -8,11 +8,11 @@ import connectDb from "./utils/db";
 import authRoutes from "./routes/authRoutes";
 import employeeRoute from "./routes/employeeRoutes";
 import attendanceRoute from "./routes/attendanceRoute";
+import leaveRoute from "./routes/leaveRoute"
 import categoryRoute from "./routes/categoryRoute"
 import postRoute from "./routes/postRoute"
-import leaveRoute from "./routes/leaveRoute"
+import contactRoute from "./routes/contactRoute"
 import { isAdmin, isAuthenticated } from "./middleware/auth";
-import fs from "fs"
 import { RequestHandler } from "express";
 import path from "path";
 
@@ -40,25 +40,7 @@ app.use(
   })
 );
 
-app.use("/uploads/:filename",  (req: Request, res: Response) => {
-  const filename = req.params.filename;
-
-  const safeFilename = path.basename(filename);
-  const filePath = path.join(__dirname, "../uploads", safeFilename);
-
-  if (!fs.existsSync(filePath)) {
-    res.status(404).json({ error: "File not found" });
-    return;
-  }
-
-  // Set headers for download
-  res.download(filePath, safeFilename, err => {
-    if (err) {
-
-      res.status(500).end();
-    }
-  });
-});
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/auth", authRoutes);
 
 
@@ -75,6 +57,7 @@ app.use("/api/attendance", isAuthenticated as RequestHandler, attendanceRoute);
 app.use("/api/leave", isAuthenticated as Handler, leaveRoute)
 app.use("/api/category", categoryRoute)
 app.use("/api/post", postRoute)
+app.use("/api/contact", contactRoute)
 
 app.listen(3001, () => {
   console.log("Server run in port 3001");
